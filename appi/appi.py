@@ -5,21 +5,21 @@ from pydantic import BaseModel
 
 app = FastAPI()
 
-class Item(BaseModel):
-    name: str
-    price: float
+class Vote(BaseModel):
+    code: int
+    value: bool
     is_offer: Union[bool, None] = None
 
 
 @app.get("/")
 def read_root():
-    return {"Hello": "World"}
+    return {"StudentionAPI": Vote}
 
 
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q}
+@app.get("/votes/{id}")
+def read_item(vote_id: int, q: Union[str, None] = None):
+    return {"vote_id": vote_id, "q": q}
 
-@app.put("/items/{item_id}")
-def update_item(item_id: int, item: Item):
-    return {"item_name": item.name, "item_id": item_id}
+@app.put("/votes/{id}")
+def update_item(vote_id: int, vote: Vote):
+    return {"vote_code": vote.code, "vote_id": vote_id}
