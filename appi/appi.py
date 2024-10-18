@@ -5,21 +5,25 @@ from pydantic import BaseModel
 
 app = FastAPI()
 
-class Item(BaseModel):
-    name: str
-    price: float
-    is_offer: Union[bool, None] = None
+vote = []
+class Vote(BaseModel):
+    code: int
+    vote: bool
+
 
 
 @app.get("/")
 def read_root():
-    return {"Hello": "World"}
+    return {"Welcome": "Welcome to Studention API"}
 
+@app.get("/vote")
+def get_vote():
+    return Vote
 
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q}
+@app.get("/vote/{vote_id}")
+def read_vote(vote_id: int):
+    return {"Vote": vote_id, "Code": Vote.code}
 
-@app.put("/items/{item_id}")
-def update_item(item_id: int, item: Item):
-    return {"item_name": item.name, "item_id": item_id}
+@app.put("/vote/{vote_id}")
+def update_item(vote:Vote):
+    return {"Message": f"Voto {Vote.code} insertado"}
