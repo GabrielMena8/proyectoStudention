@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-
+import StreaksTabContent
 
 
 class MainActivity : ComponentActivity() {
@@ -40,6 +40,10 @@ fun MyApp() {
         composable("main") {
 
             MainScreen(navController)
+        }
+
+        composable("streaks") {
+            StreaksTabContent(navController)
         }
     }
 }

@@ -36,12 +36,10 @@ import androidx.compose.foundation.layout.height
 import retrofit2.Call
 import retrofit2.Callback
 
-
-
 @Composable
 fun MainScreen(navController: NavHostController) {
     // Estado para controlar qué pestaña está seleccionada
-    var selectedTab by remember { mutableStateOf(0) }
+    var selectedTab by remember { mutableStateOf(3) }
 
     Scaffold(
         bottomBar = {
@@ -241,11 +239,31 @@ fun asyncLlamada() {
 
 @Composable
 fun StreaksTabContent(navController: NavHostController) {
-    StreakView(navController)
+    // Datos de prueba para la racha
+    val streakDays = 30
+    val rankingList = listOf(
+        RankingItemData("John Doe", 30, 1),
+        RankingItemData("Pedro Pérez", 26, 2),
+        RankingItemData("Jane Doe", 24, 3)
+    )
+
+    // Llamada pasando los valores
+    StreakView(
+        navController = navController,
+        streakDays = streakDays,
+        rankingList = rankingList
+    )
 }
 
 @Composable
-fun StreakView(navController: NavHostController) {
+fun StreakView(
+    navController: NavHostController,
+    streakDays: Int,
+    rankingList: List<RankingItemData>
+) {
+    // Calculo del rango actual y del siguiente basado en los días de racha
+    val (currentRank, nextRank, daysForNextRank) = calculateRanks(streakDays)
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -262,7 +280,7 @@ fun StreakView(navController: NavHostController) {
         // Sección de progreso de racha
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
-                text = "7 DÍAS EN RACHA",
+                text = "$streakDays DÍAS EN RACHA",
                 style = MaterialTheme.typography.titleLarge,
                 color = Color(0xFFFFA500)
             )
@@ -273,26 +291,36 @@ fun StreakView(navController: NavHostController) {
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text("Rango Actual", style = MaterialTheme.typography.bodyLarge)
-                    // Icono de rango actual (Bronce)
+                    // Icono de rango actual
                     Icon(
-                        painter = painterResource(id = R.drawable.ic_bronze_medal),
-                        contentDescription = "Rango Bronce",
+                        painter = painterResource(id = when (currentRank) {
+                            "Bronce" -> R.drawable.ic_bronze_medal
+                            "Plata" -> R.drawable.ic_silver_medal
+                            "Oro" -> R.drawable.ic_gold_medal
+                            else -> R.drawable.ic_bronze_medal
+                        }),
+                        contentDescription = "Rango $currentRank",
                         tint = Color.Unspecified,
                     )
                 }
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text("Próximo Rango", style = MaterialTheme.typography.bodyLarge)
-                    // Icono de próximo rango (Plata)
+                    // Icono del próximo rango
                     Icon(
-                        painter = painterResource(id = R.drawable.ic_silver_medal),
-                        contentDescription = "Rango Plata",
+                        painter = painterResource(id = when (nextRank) {
+                            "Bronce" -> R.drawable.ic_bronze_medal
+                            "Plata" -> R.drawable.ic_silver_medal
+                            "Oro" -> R.drawable.ic_gold_medal
+                            else -> R.drawable.ic_gold_medal // Default
+                        }),
+                        contentDescription = "Rango $nextRank",
                         tint = Color.Unspecified,
                     )
                 }
             }
 
             Text(
-                text = "8 días más para conseguir la insignia de Plata",
+                text = "$daysForNextRank días más para conseguir la insignia de $nextRank",
                 style = MaterialTheme.typography.bodyMedium,
                 color = Color.DarkGray
             )
@@ -333,17 +361,38 @@ fun StreakView(navController: NavHostController) {
                 color = Color.Black
             )
 
-            //Ejemplo de ranking con 3 posiciones
-            RankingItem(name = "John Doe", days = 30, rank = 1)
-            RankingItem(name = "Pedro Pérez", days = 26, rank = 2)
-            RankingItem(name = "Jane Doe", days = 24, rank = 3)
+            rankingList.forEach { rankingItem ->
+                RankingItem(name = rankingItem.name, days = rankingItem.days, rank = rankingItem.rank)
+            }
         }
 
-        // Botón para cerrar o volver
         Button(onClick = { navController.navigate("main") }) {
             Text(text = "Volver")
         }
     }
+}
+
+// Función para calcular el rango actual, el próximo rango y los días restantes para el próximo rango
+fun calculateRanks(streakDays: Int): Triple<String, String, Int> {
+    val currentRank = when {
+        streakDays < 15 -> "Bronce"
+        streakDays < 30 -> "Plata"
+        else -> "Oro"
+    }
+
+    val nextRank = when (currentRank) {
+        "Bronce" -> "Plata"
+        "Plata" -> "Oro"
+        else -> "Oro" // Si ya es oro, no hay mas rangos
+    }
+
+    val daysForNextRank = when (currentRank) {
+        "Bronce" -> 15 - streakDays
+        "Plata" -> 30 - streakDays
+        else -> 0 // Ya es oro, no se requieren más días
+    }
+
+    return Triple(currentRank, nextRank, daysForNextRank)
 }
 
 @Composable
@@ -359,15 +408,35 @@ fun RankingItem(name: String, days: Int, rank: Int) {
             style = MaterialTheme.typography.bodyLarge,
             color = Color.Black
         )
-        // Icono de medalla (Bronce, Plata o según el rango)
+        // Icono de medalla segun el rango
         Icon(
-            painter = painterResource(id = when (rank) {
-                1 -> R.drawable.ic_gold_medal
-                2 -> R.drawable.ic_silver_medal
-                else -> R.drawable.ic_bronze_medal
-            }),
+            painter = painterResource(id = getRankIconByPosition(rank)),
             contentDescription = "Rango $rank",
-            modifier = Modifier.size(24.dp)
+            modifier = Modifier.size(24.dp),
+            tint = Color.Unspecified
         )
     }
 }
+
+fun getRankIcon(rank: String): Int {
+    return when (rank) {
+        "Bronce" -> R.drawable.ic_bronze_medal
+        "Plata" -> R.drawable.ic_silver_medal
+        "Oro" -> R.drawable.ic_gold_medal
+        else -> R.drawable.ic_bronze_medal
+    }
+}
+
+fun getRankIconByPosition(rank: Int): Int {
+    return when (rank) {
+        1 -> R.drawable.ic_gold_medal
+        2 -> R.drawable.ic_silver_medal
+        else -> R.drawable.ic_bronze_medal
+    }
+}
+
+data class RankingItemData(
+    val name: String,
+    val days: Int,
+    val rank: Int
+)
