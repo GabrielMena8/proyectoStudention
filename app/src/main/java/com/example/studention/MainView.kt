@@ -9,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -25,6 +26,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import kotlin.random.Random
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.res.painterResource
+import com.example.studention.R
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.height
 
 import retrofit2.Call
 import retrofit2.Callback
@@ -55,6 +62,7 @@ fun MainScreen(navController: NavHostController) {
                 0 -> HomeTabContent()
                 1 -> ClassesTabContent()
                 2 -> ProfileTabContent()
+                3 -> StreaksTabContent(navController)
             }
         }
     }
@@ -146,6 +154,13 @@ fun BottomNavigationBar(selectedTabIndex: Int, onTabSelected: (Int) -> Unit) {
             label = { Text("Profile") },
             alwaysShowLabel = true
         )
+        BottomNavigationItem(
+            selected = selectedTabIndex == 3,
+            onClick = { onTabSelected(3) },
+            icon = { Icon(Icons.Default.Star, contentDescription = "Streaks") },
+            label = { Text("Rachas") },
+            alwaysShowLabel = true
+        )
     }
 }
 
@@ -224,8 +239,135 @@ fun asyncLlamada() {
     }
 }
 
+@Composable
+fun StreaksTabContent(navController: NavHostController) {
+    StreakView(navController)
+}
 
+@Composable
+fun StreakView(navController: NavHostController) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.SpaceBetween,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "Días de Racha",
+            style = MaterialTheme.typography.headlineMedium,
+            color = Color.Black
+        )
 
+        // Sección de progreso de racha
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+                text = "7 DÍAS EN RACHA",
+                style = MaterialTheme.typography.titleLarge,
+                color = Color(0xFFFFA500)
+            )
 
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text("Rango Actual", style = MaterialTheme.typography.bodyLarge)
+                    // Icono de rango actual (Bronce)
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_bronze_medal),
+                        contentDescription = "Rango Bronce",
+                        tint = Color.Unspecified,
+                    )
+                }
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text("Próximo Rango", style = MaterialTheme.typography.bodyLarge)
+                    // Icono de próximo rango (Plata)
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_silver_medal),
+                        contentDescription = "Rango Plata",
+                        tint = Color.Unspecified,
+                    )
+                }
+            }
 
+            Text(
+                text = "8 días más para conseguir la insignia de Plata",
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.DarkGray
+            )
+        }
 
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Liga y recompensas
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
+        ) {
+            Text(
+                text = "Liga y Recompensas",
+                style = MaterialTheme.typography.titleMedium,
+                color = Color.Black
+            )
+
+            Text(
+                text = "¡Los tres primeros estudiantes con más puntuación podrán ganar diferentes recompensas!",
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.DarkGray
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Ranking actual
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
+        ) {
+            Text(
+                text = "Ranking Actual",
+                style = MaterialTheme.typography.titleMedium,
+                color = Color.Black
+            )
+
+            //Ejemplo de ranking con 3 posiciones
+            RankingItem(name = "John Doe", days = 30, rank = 1)
+            RankingItem(name = "Pedro Pérez", days = 26, rank = 2)
+            RankingItem(name = "Jane Doe", days = 24, rank = 3)
+        }
+
+        // Botón para cerrar o volver
+        Button(onClick = { navController.navigate("main") }) {
+            Text(text = "Volver")
+        }
+    }
+}
+
+@Composable
+fun RankingItem(name: String, days: Int, rank: Int) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = "$rank. $name — $days días",
+            style = MaterialTheme.typography.bodyLarge,
+            color = Color.Black
+        )
+        // Icono de medalla (Bronce, Plata o según el rango)
+        Icon(
+            painter = painterResource(id = when (rank) {
+                1 -> R.drawable.ic_gold_medal
+                2 -> R.drawable.ic_silver_medal
+                else -> R.drawable.ic_bronze_medal
+            }),
+            contentDescription = "Rango $rank",
+            modifier = Modifier.size(24.dp)
+        )
+    }
+}
