@@ -9,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -23,6 +24,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import kotlin.random.Random
+
+import retrofit2.Call
+import retrofit2.Callback
+
+
 
 @Composable
 fun MainScreen(navController: NavHostController) {
@@ -55,23 +62,57 @@ fun MainScreen(navController: NavHostController) {
 
 @Composable
 fun ProfileTabContent() {
-    TODO("Not yet implemented")
-}
-
-@Composable
-fun ClassesTabContent() {
-    TODO("Not yet implemented")
-}
-
-@Composable
-fun HomeTabContent() {
 
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Home")
+
+        Text(text = "Profile")
+    }
+}
+
+@Composable
+fun ClassesTabContent() {
+
+
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+
+        Text(text = "Classes")
+    }
+}
+
+@Composable
+fun HomeTabContent() {
+
+    var code by remember { mutableStateOf("") }
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+
+        Button(onClick = {
+
+            code = generateCode()
+
+
+        })
+
+        {
+            Text("Generate Code")
+
+
+
+        }
+
+        Text(text = "" +
+                "Code: $code")
     }
 }
 
@@ -158,5 +199,33 @@ fun BottomNavigationItem(
     }
 
 }
+
+fun generateCode(): String {
+    println("Code generated")
+    asyncLlamada()
+
+    return Random(1000).nextInt().toString();
+}
+
+
+fun asyncLlamada() {
+
+
+
+    //Simular llamada a una API
+    val call = object : Callback<String> {
+        override fun onResponse(call: Call<String>, response: retrofit2.Response<String>) {
+            println("Response received")
+        }
+
+        override fun onFailure(call: Call<String>, t: Throwable) {
+            println("Error received")
+        }
+    }
+}
+
+
+
+
 
 
