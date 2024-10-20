@@ -8,7 +8,8 @@ app = FastAPI()
 vote = []
 class Vote(BaseModel):
     code: int
-    vote: bool
+    boton1: bool
+    boton2: bool
 
 
 
