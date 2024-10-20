@@ -32,6 +32,8 @@ import com.example.studention.R
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.clickable
+
 
 import retrofit2.Call
 import retrofit2.Callback
@@ -39,7 +41,7 @@ import retrofit2.Callback
 @Composable
 fun MainScreen(navController: NavHostController) {
     // Estado para controlar qué pestaña está seleccionada
-    var selectedTab by remember { mutableStateOf(3) }
+    var selectedTab by remember { mutableStateOf(0) }
 
     Scaffold(
         bottomBar = {
@@ -196,6 +198,7 @@ fun BottomNavigationItem(
         color = color,
         contentColor = contentColor,
         modifier = Modifier.fillMaxWidth()
+            .clickable(onClick = onClick)
     ) {
         Row(
             modifier = Modifier
