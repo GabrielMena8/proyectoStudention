@@ -38,8 +38,16 @@ fun MyApp() {
 
         // Pantalla principal (con barra inferior)
         composable("main") {
-
             MainScreen(navController)
         }
+
+        // Pantalla ButtonScreen
+        composable("buttonScreen") {
+            ButtonScreen(navController)
+        }
+
+        // Pantallas de retroalimentación positiva y negativa
+        composable("positive") { PositiveScreen(navController) }
+        composable("negative") { NegativeScreen(navController) }
     }
 }
