@@ -243,7 +243,7 @@ fun asyncLlamada() {
 @Composable
 fun StreaksTabContent(navController: NavHostController) {
     // Datos de prueba para la racha
-    val streakDays = 30
+    val streakDays = 6
     val rankingList = listOf(
         RankingItemData("John Doe", 30, 1),
         RankingItemData("Pedro Pérez", 26, 2),
