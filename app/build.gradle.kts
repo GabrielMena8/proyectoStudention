@@ -1,6 +1,9 @@
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    id("com.android.application")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -73,5 +76,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     // Para tareas periódicas
     implementation(libs.androidx.work.runtime.ktx)
+    implementation(platform("com.google.firebase:firebase-bom:33.5.0"))
+    implementation("com.google.firebase:firebase-analytics")
 
 }

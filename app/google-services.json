@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "311103393755",
+    "project_id": "studention-11f13",
+    "storage_bucket": "studention-11f13.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:311103393755:android:e8f9fb72832014ad47e1fe",
+        "android_client_info": {
+          "package_name": "com.example.studention"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA0F8RD9LWyyz5QQPDV_OF-_bYQNx5NNTk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
