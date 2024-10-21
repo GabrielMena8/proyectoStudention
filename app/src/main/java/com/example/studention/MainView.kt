@@ -35,25 +35,17 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.clickable
 import androidx.compose.ui.platform.LocalContext
 import com.example.studention.showDailyReminder
-
+import androidx.compose.material3.ButtonDefaults
+import androidx.navigation.NavGraph.Companion.findStartDestination
 
 import retrofit2.Call
 import retrofit2.Callback
 
 @Composable
 fun MainScreen(navController: NavHostController) {
-    // Estado para controlar qué pestaña está seleccionada
     var selectedTab by remember { mutableStateOf(0) }
 
-    Scaffold(
-        bottomBar = {
-            BottomNavigationBar(
-                selectedTabIndex = selectedTab,
-                onTabSelected = { index -> selectedTab = index }
-            )
-        }
-    ) { innerPadding ->
-        // Contenido que cambia según la pestaña seleccionada
+    Scaffold { innerPadding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -62,11 +54,36 @@ fun MainScreen(navController: NavHostController) {
         ) {
             when (selectedTab) {
                 0 -> HomeTabContent()
-                1 -> ClassesTabContent()
+                1 -> {
+                    // Navega a ButtonScreen y limpia la pila de navegación
+                    navController.navigate("buttonScreen") {
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+                        launchSingleTop = true // Esto evita crear múltiples instancias
+                        restoreState = true // Restaura el estado anterior
+                    }
+                }
                 2 -> ProfileTabContent()
                 3 -> StreaksTabContent(navController)
             }
         }
+
+        BottomNavigationBar(
+            selectedTabIndex = selectedTab,
+            onTabSelected = { index ->
+                selectedTab = index
+                if (index == 1) {
+                    navController.navigate("buttonScreen") {
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+                        launchSingleTop = true // Esto evita crear múltiples instancias
+                        restoreState = true // Restaura el estado anterior
+                    }
+                }
+            }
+        )
     }
 }
 
@@ -88,18 +105,24 @@ fun ProfileTabContent() {
 }
 
 @Composable
-fun ClassesTabContent() {
-
-
+fun ClassesTabContent(navController: NavHostController) {
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
-        Text(text = "Classes")
+        // Botón para "Rate your Class!"
+        Button(
+            onClick = { navController.navigate("buttonScreen") }, // Navega a ButtonScreen
+            modifier = Modifier.padding(16.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color.Blue) // Color del botón
+        ) {
+            Text("Rate your Class!", color = Color.White)
+        }
     }
 }
+
+
 
 @Composable
 fun HomeTabContent() {
@@ -135,30 +158,29 @@ fun HomeTabContent() {
 
 @Composable
 fun BottomNavigationBar(selectedTabIndex: Int, onTabSelected: (Int) -> Unit) {
-    BottomNavigation(
-        backgroundColor = Color.White,
-        contentColor = Color.Black
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        horizontalArrangement = Arrangement.SpaceAround
     ) {
-
-        BottomNavigationItem(
-            selected = selectedTabIndex == 0,
+        Button(
             onClick = { onTabSelected(0) },
-            icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
-            label = { Text("Home") },
-            alwaysShowLabel = true
-        )
+            colors = ButtonDefaults.buttonColors(containerColor = if (selectedTabIndex == 0) Color.Blue else Color.Gray)
+        ) {
+            Text("Home", color = Color.White)
+        }
 
-        BottomNavigationItem(
-            selected = selectedTabIndex == 1,
+        Button(
             onClick = { onTabSelected(1) },
-            icon = { Icon(Icons.Default.List, contentDescription = "Classes") },
-            label = { Text("Classes") },
-            alwaysShowLabel = true
-        )
+            colors = ButtonDefaults.buttonColors(containerColor = if (selectedTabIndex == 1) Color.Blue else Color.Gray)
+        ) {
+            Text("Rate your Class!", color = Color.White)
+        }
 
-        BottomNavigationItem(
-            selected = selectedTabIndex == 2,
+        Button(
             onClick = { onTabSelected(2) },
+
             icon = { Icon(Icons.Default.Person, contentDescription = "Profile") },
             label = { Text("Profile") },
             alwaysShowLabel = true
@@ -172,6 +194,7 @@ fun BottomNavigationBar(selectedTabIndex: Int, onTabSelected: (Int) -> Unit) {
         )
     }
 }
+
 
 
 
