@@ -39,7 +39,7 @@ def get_vote():
 @app.post("/vote/")
 def create_vote(vote: Vote):
     vote.code = random_code()
-    return vote
+    return Vote
 
 @app.get("/vote/{vote_id}")
 def read_vote(vote_id: int):
