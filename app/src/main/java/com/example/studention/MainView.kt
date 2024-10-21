@@ -1,3 +1,4 @@
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +15,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+
+import kotlinx.coroutines.launch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -34,16 +37,22 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.clickable
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
+import com.example.studention.RetrofitInstance
 import com.example.studention.showDailyReminder
+import kotlinx.coroutines.GlobalScope
 
 
 import retrofit2.Call
 import retrofit2.Callback
+import retrofit2.Response
 
 @Composable
 fun MainScreen(navController: NavHostController) {
     var selectedTab by remember { mutableStateOf(0) }
+
 
     Scaffold(
         bottomBar = {
@@ -72,6 +81,11 @@ fun MainScreen(navController: NavHostController) {
             }
         }
     }
+
+
+
+
+
 }
 
 
@@ -112,7 +126,7 @@ fun ClassesTabContent(navController: NavHostController) {
 
 @Composable
 fun HomeTabContent() {
-
+    val scope = rememberCoroutineScope()
     var code by remember { mutableStateOf("") }
     val context = LocalContext.current
     Column(
@@ -123,7 +137,15 @@ fun HomeTabContent() {
 
         Button(onClick = {
 
-            code = generateCode()
+            scope.launch {
+                try {
+                    // Llamada a la API aquí
+                    val response = RetrofitInstance.api.getBase()// Asegúrate de tener este método en tu servicio
+                    Log.d("API_RESPONSE", "Datos: ${response.Welcome}") // Imprimir la respuesta en Logcat
+                } catch (e: Exception) {
+                    Log.e("API_ERROR", "Error al obtener los datos: ${e.message}") // Manejo de errores
+                }
+            }
 
         })
 
@@ -134,13 +156,12 @@ fun HomeTabContent() {
         Text(text = "" +
                 "Code: $code")
     }
-
-    /*Button(onClick = { showDailyReminder(
-        context = context
-    ) }) {
-        Text(text = "Test")
-    }*/
 }
+
+
+
+
+
 
 @Composable
 fun BottomNavigationBar(selectedTabIndex: Int, onTabSelected: (Int) -> Unit) {
@@ -216,7 +237,8 @@ fun BottomNavigationItem(
     Surface(
         color = color,
         contentColor = contentColor,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
             .clickable(onClick = onClick)
     ) {
         Row(
@@ -235,29 +257,11 @@ fun BottomNavigationItem(
 
 }
 
-fun generateCode(): String {
-    println("Code generated")
-    asyncLlamada()
-
-    return Random(1000).nextInt().toString();
-}
-
-
-fun asyncLlamada() {
 
 
 
-    //Simular llamada a una API
-    val call = object : Callback<String> {
-        override fun onResponse(call: Call<String>, response: retrofit2.Response<String>) {
-            println("Response received")
-        }
 
-        override fun onFailure(call: Call<String>, t: Throwable) {
-            println("Error received")
-        }
-    }
-}
+
 
 @Composable
 fun StreaksTabContent(navController: NavHostController) {

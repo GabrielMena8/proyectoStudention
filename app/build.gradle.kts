@@ -74,4 +74,14 @@ dependencies {
     // Para tareas periódicas
     implementation(libs.androidx.work.runtime.ktx)
 
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.android)
+
+    // Corutinas para el ciclo de vida
+    implementation(libs.androidx.lifecycle.runtime.ktx.v262)  // Para lifecycleScope y viewModelScope
+
+
+
+
+
 }
