@@ -33,6 +33,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.clickable
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.ui.platform.LocalContext
 import com.example.studention.showDailyReminder
 
@@ -42,18 +43,21 @@ import retrofit2.Callback
 
 @Composable
 fun MainScreen(navController: NavHostController) {
-    // Estado para controlar qué pestaña está seleccionada
     var selectedTab by remember { mutableStateOf(0) }
 
     Scaffold(
         bottomBar = {
             BottomNavigationBar(
                 selectedTabIndex = selectedTab,
-                onTabSelected = { index -> selectedTab = index }
+                onTabSelected = { index ->
+                    selectedTab = index
+                    if (index == 1) { // Navegar a buttonScreen cuando se selecciona "Classes"
+                        navController.navigate("buttonScreen")
+                    }
+                }
             )
         }
     ) { innerPadding ->
-        // Contenido que cambia según la pestaña seleccionada
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -62,13 +66,14 @@ fun MainScreen(navController: NavHostController) {
         ) {
             when (selectedTab) {
                 0 -> HomeTabContent()
-                1 -> ClassesTabContent()
+                //1 -> ClassesTabContent(navController) // Esto ya no será necesario
                 2 -> ProfileTabContent()
                 3 -> StreaksTabContent(navController)
             }
         }
     }
 }
+
 
 
 //Boton para debug de notificaciones
@@ -88,16 +93,20 @@ fun ProfileTabContent() {
 }
 
 @Composable
-fun ClassesTabContent() {
-
-
+fun ClassesTabContent(navController: NavHostController) {
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
-        Text(text = "Classes")
+        // Botón para "Rate your Class!"
+        Button(
+            onClick = { navController.navigate("buttonScreen") }, // Navega a ButtonScreen
+            modifier = Modifier.padding(16.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color.Blue) // Color del botón
+        ) {
+            Text("Rate your Class!", color = Color.White)
+        }
     }
 }
 
@@ -126,11 +135,11 @@ fun HomeTabContent() {
                 "Code: $code")
     }
 
-    Button(onClick = { showDailyReminder(
+    /*Button(onClick = { showDailyReminder(
         context = context
     ) }) {
         Text(text = "Test")
-    }
+    }*/
 }
 
 @Composable
@@ -139,7 +148,6 @@ fun BottomNavigationBar(selectedTabIndex: Int, onTabSelected: (Int) -> Unit) {
         backgroundColor = Color.White,
         contentColor = Color.Black
     ) {
-
         BottomNavigationItem(
             selected = selectedTabIndex == 0,
             onClick = { onTabSelected(0) },
@@ -150,9 +158,9 @@ fun BottomNavigationBar(selectedTabIndex: Int, onTabSelected: (Int) -> Unit) {
 
         BottomNavigationItem(
             selected = selectedTabIndex == 1,
-            onClick = { onTabSelected(1) },
+            onClick = { onTabSelected(1) }, // Cambiar navegación directamente a buttonScreen
             icon = { Icon(Icons.Default.List, contentDescription = "Classes") },
-            label = { Text("Classes") },
+            label = { Text("Rate your Class!") },
             alwaysShowLabel = true
         )
 
@@ -163,6 +171,7 @@ fun BottomNavigationBar(selectedTabIndex: Int, onTabSelected: (Int) -> Unit) {
             label = { Text("Profile") },
             alwaysShowLabel = true
         )
+
         BottomNavigationItem(
             selected = selectedTabIndex == 3,
             onClick = { onTabSelected(3) },
@@ -172,6 +181,7 @@ fun BottomNavigationBar(selectedTabIndex: Int, onTabSelected: (Int) -> Unit) {
         )
     }
 }
+
 
 
 
