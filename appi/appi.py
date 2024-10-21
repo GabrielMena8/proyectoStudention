@@ -47,4 +47,4 @@ def read_vote(vote_id: int):
 
 @app.put("/vote/{vote_id}")
 def update_item(vote_id: int, vote: Vote):
-    return {"Vote_id": vote_id, "Code": Vote.code}
+    return {"Vote_id": vote_id, "Code": Vote.code, "Boton1": Vote.boton1, "Boton2": Vote.boton1}
