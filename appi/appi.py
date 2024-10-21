@@ -1,3 +1,4 @@
+from random import randint
 from typing import Union
 
 from fastapi import FastAPI
@@ -7,11 +8,20 @@ app = FastAPI()
 
 vote = []
 class Vote(BaseModel):
-    code: int
+    code: str = None
     boton1: bool
     boton2: bool
 
+def random_code():
+  random_list = []
 
+  for i in range(8):
+    x = randint(0,9) 
+    random_list.append(str(x)) 
+  
+  code = ''.join(random_list) 
+  
+  return code  
 
 @app.get("/")
 def read_root():
@@ -23,6 +33,7 @@ def get_vote():
 
 @app.post("/vote/")
 def create_vote(vote: Vote):
+    vote.code = random_code()
     return vote
 
 @app.get("/vote/{vote_id}")
