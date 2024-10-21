@@ -33,6 +33,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.clickable
+import androidx.compose.ui.platform.LocalContext
+import com.example.studention.showDailyReminder
 
 
 import retrofit2.Call
@@ -68,6 +70,10 @@ fun MainScreen(navController: NavHostController) {
     }
 }
 
+
+//Boton para debug de notificaciones
+
+
 @Composable
 fun ProfileTabContent() {
 
@@ -99,6 +105,7 @@ fun ClassesTabContent() {
 fun HomeTabContent() {
 
     var code by remember { mutableStateOf("") }
+    val context = LocalContext.current
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -109,18 +116,20 @@ fun HomeTabContent() {
 
             code = generateCode()
 
-
         })
 
         {
             Text("Generate Code")
-
-
-
         }
 
         Text(text = "" +
                 "Code: $code")
+    }
+
+    Button(onClick = { showDailyReminder(
+        context = context
+    ) }) {
+        Text(text = "Test")
     }
 }
 

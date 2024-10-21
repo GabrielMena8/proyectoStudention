@@ -70,4 +70,8 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.logging.interceptor)
+    implementation(libs.androidx.core.ktx)
+    // Para tareas periódicas
+    implementation(libs.androidx.work.runtime.ktx)
+
 }
