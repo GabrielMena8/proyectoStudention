@@ -57,6 +57,7 @@ fun MainScreen(navController: NavHostController) {
     var selectedTab by remember { mutableStateOf(0) }
     var showPasswordDialog by remember { mutableStateOf(false) } // Variable para mostrar el diálogo de contraseña
 
+
     Scaffold(
         bottomBar = {
             BottomNavigationBar(
@@ -98,7 +99,8 @@ fun MainScreen(navController: NavHostController) {
 }
 
 
-
+//Variables
+var streakDays : Int = 0
 
 
 
@@ -228,9 +230,23 @@ fun HomeTabContent() {
         {
             Text("Generate Code")
         }
+            Text(text = "Code: $code")
 
-        Text(text = "" +
-                "Code: $code")
+
+        ClassCard(
+            title = "Clase de Matemáticas",
+            description = "Clase de matemáticas para el día de hoy",
+            time = "10:00 AM - 11:00 AM",
+            onClick = {
+
+                NavHostController(context).navigate("buttonScreen")
+            }
+        )
+
+
+
+
+
     }
 }
 
@@ -281,7 +297,28 @@ fun BottomNavigationBar(selectedTabIndex: Int, onTabSelected: (Int) -> Unit) {
 
 
 
-
+@Composable
+fun ClassCard(
+    title: String,
+    description: String,
+    time: String,
+    onClick: () -> Unit
+) {
+    Card(
+        onClick = onClick,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text(text = title, style = MaterialTheme.typography.headlineSmall)
+            Text(text = description, style = MaterialTheme.typography.bodyMedium)
+            Text(text = time, style = MaterialTheme.typography.bodyMedium)
+        }
+    }
+}
 
 @Composable
 fun BottomNavigation(
@@ -342,7 +379,6 @@ fun BottomNavigationItem(
 @Composable
 fun StreaksTabContent(navController: NavHostController) {
     // Datos de prueba para la racha
-    val streakDays = 6
     val rankingList = listOf(
         RankingItemData("John Doe", 30, 1),
         RankingItemData("Pedro Pérez", 26, 2),
@@ -350,6 +386,7 @@ fun StreaksTabContent(navController: NavHostController) {
     )
 
     // Llamada pasando los valores
+
     StreakView(
         navController = navController,
         streakDays = streakDays,
