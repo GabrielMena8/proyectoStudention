@@ -14,5 +14,13 @@ interface ApiService{
     //Sin saber el tipo de dato que devuelve la API, se deja suspend fun getBase() y se cambia el tipo de dato a String
 
 
+    @GET("/votes")
+    suspend fun getVotes() : List<VoteResponse>
+
+    @GET("/votes/{id}")
+    suspend fun getVote(@Path("id") id: Int) : VoteResponse
+
+
+
 
 }

@@ -101,6 +101,7 @@ fun MainScreen(navController: NavHostController) {
 
 //Variables
 var streakDays : Int = 0
+var correctPassword = ""
 
 
 
@@ -154,7 +155,7 @@ fun ClassesTabContent(navController: NavHostController) {
 fun PasswordDialog(onDismiss: () -> Unit, onPasswordCorrect: () -> Unit) {
     var password by remember { mutableStateOf("") }
     var showError by remember { mutableStateOf(false) }  // Para controlar si se muestra el error
-    val correctPassword = "A123456"
+
 
     AlertDialog(
         onDismissRequest = onDismiss, // Al presionar fuera, se ejecuta el onDismiss
@@ -207,31 +208,13 @@ fun HomeTabContent() {
     val scope = rememberCoroutineScope()
     var code by remember { mutableStateOf("") }
     val context = LocalContext.current
+    val voteId = 0;
+
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
-        Button(onClick = {
-
-            scope.launch {
-                try {
-                    // Llamada a la API aquí
-                    val response = RetrofitInstance.api.getBase()// Asegúrate de tener este método en tu servicio
-                    Log.d("API_RESPONSE", "Datos: ${response.Welcome}") // Imprimir la respuesta en Logcat
-                } catch (e: Exception) {
-                    Log.e("API_ERROR", "Error al obtener los datos: ${e.message}") // Manejo de errores
-                }
-            }
-
-        })
-
-        {
-            Text("Generate Code")
-        }
-            Text(text = "Code: $code")
-
 
         ClassCard(
             title = "Clase de Matemáticas",
@@ -242,6 +225,38 @@ fun HomeTabContent() {
                 NavHostController(context).navigate("buttonScreen")
             }
         )
+
+
+        Button(onClick = {
+            scope.launch {
+                try {
+                    // Llamada a la API aquí
+                    val response = RetrofitInstance.api.getVotes()// Asegúrate de tener este método en tu servicio
+
+                    response.forEach {
+                        Log.d("API_RESPONSE", "Datos: ${it.id} - ${it.code} - ${it.boton1} - ${it.boton2}") // Imprimir la respuesta en Logcat
+                        correctPassword = it.code.toString()
+                    }
+
+                    code = response.toString() // Asignar el valor de la respuesta a la variable code
+                    Log.d("API_RESPONSE", "Datos: ${response.toString()}") // Imprimir la respuesta en Logcat
+
+                } catch (e: Exception) {
+                    Log.e("API_ERROR", "Error al obtener los datos: ${e.message}") // Manejo de errores
+                }
+            }
+
+        }
+        )
+        {
+            Text("Generate Request")
+
+
+
+        }
+
+        Text(text = "Código: $code")
+
 
 
 
