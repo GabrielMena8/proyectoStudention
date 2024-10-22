@@ -17,7 +17,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 
 import androidx.compose.material3.*
-
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,10 +41,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import com.example.studention.RetrofitInstance
 import com.example.studention.showDailyReminder
 import kotlinx.coroutines.GlobalScope
@@ -53,20 +58,28 @@ import retrofit2.Callback
 import retrofit2.Response
 
 @Composable
+
 fun MainScreen(navController: NavHostController) {
     var selectedTab by remember { mutableStateOf(0) }
-    var showPasswordDialog by remember { mutableStateOf(false) } // Variable para mostrar el diálogo de contraseña
+    var showPasswordDialog by remember { mutableStateOf(false) }
 
+    // Definimos los colores para cada pestaña
+    val backgroundColor = when (selectedTab) {
+        0 -> Color(0xFFE3F2FD) // Azul claro para Home
+        1 -> Color(0xFFFCE4EC) // Rosa para Classes
+        2 -> Color(0xFFE8F5E9) // Verde claro para Profile
+        3 -> Color(0xFFFFF3E0) // Naranja claro para Streaks
+        else -> Color.White
+    }
 
     Scaffold(
+        containerColor = backgroundColor, // Cambiar el fondo dinámicamente
         bottomBar = {
             BottomNavigationBar(
                 selectedTabIndex = selectedTab,
                 onTabSelected = { index ->
                     selectedTab = index
-                    if (index == 1) { // Si selecciona la pestaña de "Classes"
-                        showPasswordDialog = true // Muestra el diálogo de contraseña
-                    }
+                    if (index == 1) showPasswordDialog = true
                 }
             )
         }
@@ -79,21 +92,82 @@ fun MainScreen(navController: NavHostController) {
         ) {
             when (selectedTab) {
                 0 -> HomeTabContent()
-                //1 -> ClassesTabContent(navController) // Eliminamos esto ya que gestionamos desde el dialogo
                 2 -> ProfileTabContent()
                 3 -> StreaksTabContent(navController)
             }
         }
 
-        // Mostrar el diálogo de verificación de contraseña si es necesario
         if (showPasswordDialog) {
             PasswordDialog(
-                onDismiss = { showPasswordDialog = false }, // Si se cierra el diálogo, volvemos a la vista principal
+                onDismiss = { showPasswordDialog = false },
                 onPasswordCorrect = {
                     showPasswordDialog = false
-                    navController.navigate("buttonScreen") // Navegar a buttonScreen solo si la contraseña es correcta
+                    navController.navigate("buttonScreen")
                 }
             )
+        }
+    }
+}
+
+@Composable
+fun ClassCard(
+    title: String,
+    description: String,
+    time: String,
+    onClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(12.dp)
+            .shadow(6.dp, RoundedCornerShape(16.dp)),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White)
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold)
+            )
+            Text(
+                text = description,
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.Gray
+            )
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = time,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Gray
+                )
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_silver_medal),
+                    contentDescription = "Time",
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Button(
+                onClick = onClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+            ) {
+                Text("Rate this Class", color = Color.White)
+            }
         }
     }
 }
@@ -203,150 +277,139 @@ fun PasswordDialog(onDismiss: () -> Unit, onPasswordCorrect: () -> Unit) {
 
 
 
+
+
 @Composable
-fun HomeTabContent() {
-    val scope = rememberCoroutineScope()
-    var code by remember { mutableStateOf("") }
-    val context = LocalContext.current
-    val voteId = 0;
+    fun HomeTabContent() {
+        val scope = rememberCoroutineScope()
+        var code by remember { mutableStateOf("") } // Código recibido de la API
+        var showPopup by remember { mutableStateOf(false) } // Estado del popup
+        val context = LocalContext.current
 
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-
-        ClassCard(
-            title = "Clase de Matemáticas",
-            description = "Clase de matemáticas para el día de hoy",
-            time = "10:00 AM - 11:00 AM",
-            onClick = {
-
-                NavHostController(context).navigate("buttonScreen")
-            }
+        val classes = listOf(
+            ClassData("Matemáticas", "Clase de álgebra", "10:00 AM - 11:00 AM"),
+            ClassData("Historia", "Historia Universal", "12:00 PM - 1:00 PM"),
+            ClassData("Ciencias", "Laboratorio de química", "2:00 PM - 3:00 PM"),
+            ClassData("Inglés", "Clase de gramática", "4:00 PM - 5:00 PM")
         )
 
+        LazyVerticalGrid(
+            columns = GridCells.Adaptive(minSize = 150.dp),
+            modifier = Modifier.padding(8.dp)
+        ) {
+            items(classes) { classItem ->
+                ClassCard(
+                    title = classItem.title,
+                    description = classItem.description,
+                    time = classItem.time,
+                    onClick = { /* Acción al hacer clic en una clase */ }
+                )
+            }
+
+
+
+
+        }
 
         Button(onClick = {
             scope.launch {
                 try {
-                    // Llamada a la API aquí
-                    val response = RetrofitInstance.api.getVotes()// Asegúrate de tener este método en tu servicio
-
+                    val response = RetrofitInstance.api.getVotes()
                     response.forEach {
-                        Log.d("API_RESPONSE", "Datos: ${it.id} - ${it.code} - ${it.boton1} - ${it.boton2}") // Imprimir la respuesta en Logcat
+                        Log.d("API_RESPONSE", "Datos: ${it.id} - ${it.code}")
                         correctPassword = it.code.toString()
                     }
-
-                    code = response.toString() // Asignar el valor de la respuesta a la variable code
-                    Log.d("API_RESPONSE", "Datos: ${response.toString()}") // Imprimir la respuesta en Logcat
-
+                    code = correctPassword// Asigna el valor del código
+                    showPopup = true // Muestra el popup al recibir los datos
                 } catch (e: Exception) {
-                    Log.e("API_ERROR", "Error al obtener los datos: ${e.message}") // Manejo de errores
+                    Log.e("API_ERROR", "Error al obtener los datos: ${e.message}")
                 }
             }
-
-        }
-        )
-        {
+        }) {
             Text("Generate Request")
-
-
-
         }
 
-        Text(text = "Código: $code")
-
-
-
-
-
-
-    }
-}
-
-
-
-
-
-
-@Composable
-fun BottomNavigationBar(selectedTabIndex: Int, onTabSelected: (Int) -> Unit) {
-    BottomNavigation(
-        backgroundColor = Color.White,
-        contentColor = Color.Black
-    ) {
-        BottomNavigationItem(
-            selected = selectedTabIndex == 0,
-            onClick = { onTabSelected(0) },
-            icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
-            label = { Text("Home") },
-            alwaysShowLabel = true
-        )
-
-        BottomNavigationItem(
-            selected = selectedTabIndex == 1,
-            onClick = { onTabSelected(1) }, // Cambiar navegación directamente a buttonScreen
-            icon = { Icon(Icons.Default.List, contentDescription = "Classes") },
-            label = { Text("Rate your Class!") },
-            alwaysShowLabel = true
-        )
-
-        BottomNavigationItem(
-            selected = selectedTabIndex == 2,
-            onClick = { onTabSelected(2) },
-            icon = { Icon(Icons.Default.Person, contentDescription = "Profile") },
-            label = { Text("Profile") },
-            alwaysShowLabel = true
-        )
-
-        BottomNavigationItem(
-            selected = selectedTabIndex == 3,
-            onClick = { onTabSelected(3) },
-            icon = { Icon(Icons.Default.Star, contentDescription = "Streaks") },
-            label = { Text("Rachas") },
-            alwaysShowLabel = true
-        )
-    }
-}
-
-
-
-@Composable
-fun ClassCard(
-    title: String,
-    description: String,
-    time: String,
-    onClick: () -> Unit
-) {
-    Card(
-        onClick = onClick,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            Text(text = title, style = MaterialTheme.typography.headlineSmall)
-            Text(text = description, style = MaterialTheme.typography.bodyMedium)
-            Text(text = time, style = MaterialTheme.typography.bodyMedium)
+        // Mostrar el popup si el estado es verdadero
+        if (showPopup) {
+            popUpCode(code) { showPopup = false }
         }
     }
-}
+
+
 
 @Composable
-fun BottomNavigation(
-    backgroundColor: Color,
-    contentColor: Color,
-    content: @Composable () -> Unit
+    fun popUpCode(code: String, onDismiss: () -> Unit) {
+        AlertDialog(
+            onDismissRequest = onDismiss,
+            title = { Text("Código de la API") },
+            text = { Text("El código de la API es: $code") },
+            confirmButton = {
+                Button(onClick = onDismiss) {
+                    Text("OK")
+                }
+            }
+        )
+    }
+
+
+
+
+
+// Clase de datos para las clases
+data class ClassData(
+    val title: String,
+    val description: String,
+    val time: String
+)
+
+
+
+
+@Composable
+fun BottomNavigationBar(
+    selectedTabIndex: Int,
+    onTabSelected: (Int) -> Unit,
+    backgroundColor: Color = Color(0xFF6200EE) // Personalizable
 ) {
     Surface(
         color = backgroundColor,
-        contentColor = contentColor
+        contentColor = Color.White,
+        modifier = Modifier.height(56.dp) // Grosor reducido
     ) {
-        Column {
-            content()
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(2.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            BottomNavigationItem(
+                selected = selectedTabIndex == 0,
+                onClick = { onTabSelected(0) },
+                icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
+                label = { Text("Home") }
+            )
+
+            BottomNavigationItem(
+                selected = selectedTabIndex == 1,
+                onClick = { onTabSelected(1) },
+                icon = { Icon(Icons.Default.List, contentDescription = "Classes") },
+                label = { Text("Rate") }
+            )
+
+            BottomNavigationItem(
+                selected = selectedTabIndex == 2,
+                onClick = { onTabSelected(2) },
+                icon = { Icon(Icons.Default.Person, contentDescription = "Profile") },
+                label = { Text("Profile") }
+            )
+
+            BottomNavigationItem(
+                selected = selectedTabIndex == 3,
+                onClick = { onTabSelected(3) },
+                icon = { Icon(Icons.Default.Star, contentDescription = "Streaks") },
+                label = { Text("Streaks") }
+            )
         }
     }
 }
@@ -356,34 +419,31 @@ fun BottomNavigationItem(
     selected: Boolean,
     onClick: () -> Unit,
     icon: @Composable () -> Unit,
-    label: @Composable () -> Unit,
-    alwaysShowLabel: Boolean
+    label: @Composable () -> Unit
 ) {
-    val color = if (selected) Color.Blue else Color.Gray
-    val contentColor = if (selected) Color.White else Color.Black
+    val backgroundColor = if (selected) Color(0xFF3700B3) else Color.Transparent // Color para ítems seleccionados
+    val contentColor = if (selected) Color.White else Color.Gray
 
     Surface(
-        color = color,
+        color = backgroundColor,
         contentColor = contentColor,
+        shape = MaterialTheme.shapes.medium, // Borde opcional
         modifier = Modifier
-            .fillMaxWidth()
+            .padding(4.dp)
             .clickable(onClick = onClick)
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            modifier = Modifier.padding(8.dp)
         ) {
             icon()
-            if (alwaysShowLabel || selected) {
-                label()
-            }
+            label()
         }
     }
-
 }
+
+
 
 
 

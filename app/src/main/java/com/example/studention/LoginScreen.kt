@@ -1,6 +1,5 @@
 package com.example.studention
 
-
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -11,9 +10,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,7 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import java.util.regex.Pattern
 
-
+@OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun Login(navController: NavHostController) {
@@ -49,9 +53,10 @@ fun Login(navController: NavHostController) {
 
     Box(
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxSize()
             .padding(top = 32.dp)
     ) {
+        // Imagen de fondo
         Image(
             painter = painterResource(id = R.drawable.c),
             contentDescription = "Logo",
@@ -59,25 +64,38 @@ fun Login(navController: NavHostController) {
             modifier = Modifier.fillMaxSize()
         )
 
+        // Columna centrada
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp),
-            verticalArrangement = Arrangement.Center,
+            verticalArrangement = Arrangement.Center, // Centrar verticalmente
+            horizontalAlignment = Alignment.CenterHorizontally // Centrar horizontalmente
         ) {
-
-            TextField(
-                value = email.value,
-                onValueChange = {
-                    email.value = it
-                    emailError = !isEmailValid(it.text)
-                },
-                label = { Text("Ingresa tu correo electrónico") },
+            // Card para el campo de email
+            Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 64.dp),
-                isError = emailError
-            )
+                    .padding(top = 16.dp),
+                elevation = CardDefaults.cardElevation(8.dp),
+                shape = MaterialTheme.shapes.medium // Bordes redondeados
+            ) {
+                TextField(
+                    value = email.value,
+                    onValueChange = {
+                        email.value = it
+                        emailError = !isEmailValid(it.text)
+                    },
+                    label = { Text("Ingresa tu correo electrónico") },
+                    modifier = Modifier.fillMaxWidth(),
+                    isError = emailError,
+                    colors = TextFieldDefaults.textFieldColors(
+                        focusedIndicatorColor = Color.Blue,
+                        unfocusedIndicatorColor = Color.Gray,
+                        errorIndicatorColor = Color.Red
+                    )
+                )
+            }
 
             if (emailError) {
                 Text(
@@ -88,18 +106,30 @@ fun Login(navController: NavHostController) {
                 )
             }
 
-            TextField(
-                value = password.value,
-                onValueChange = {
-                    password.value = it
-                    passwordError = !isPasswordValid(it.text)
-                },
-                label = { Text("Ingresa tu Contraseña") },
+            // Card para el campo de password
+            Card(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 16.dp),
-                isError = passwordError
-            )
+                elevation = CardDefaults.cardElevation(8.dp),
+                shape = MaterialTheme.shapes.medium // Bordes redondeados
+            ) {
+                TextField(
+                    value = password.value,
+                    onValueChange = {
+                        password.value = it
+                        passwordError = !isPasswordValid(it.text)
+                    },
+                    label = { Text("Ingresa tu Contraseña") },
+                    modifier = Modifier.fillMaxWidth(),
+                    isError = passwordError,
+                    colors = TextFieldDefaults.textFieldColors(
+                        focusedIndicatorColor = Color.Blue,
+                        unfocusedIndicatorColor = Color.Gray,
+                        errorIndicatorColor = Color.Red
+                    )
+                )
+            }
 
             if (passwordError) {
                 Text(
@@ -110,20 +140,22 @@ fun Login(navController: NavHostController) {
                 )
             }
 
-            Spacer(modifier = Modifier.weight(3f))
+            Spacer(modifier = Modifier.weight(1f)) // Espacio flexible para centrar
 
+            // Botón de inicio de sesión
             Button(
                 onClick = {
                     if (isEmailValid(email.value.text) && isPasswordValid(password.value.text)) {
-
                         navController.navigate("main")
                     }
                 },
-                modifier = Modifier.align(Alignment.End)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp), // Botón ocupa el ancho completo
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Blue) // Color del botón
             ) {
-                Text("Iniciar sesión")
+                Text("Iniciar sesión", color = Color.White)
             }
-
         }
     }
 }
