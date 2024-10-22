@@ -16,6 +16,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 
+import androidx.compose.material3.*
+
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import kotlinx.coroutines.launch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,11 +31,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 import kotlin.random.Random
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.res.painterResource
@@ -52,7 +55,7 @@ import retrofit2.Response
 @Composable
 fun MainScreen(navController: NavHostController) {
     var selectedTab by remember { mutableStateOf(0) }
-
+    var showPasswordDialog by remember { mutableStateOf(false) } // Variable para mostrar el diálogo de contraseña
 
     Scaffold(
         bottomBar = {
@@ -60,8 +63,8 @@ fun MainScreen(navController: NavHostController) {
                 selectedTabIndex = selectedTab,
                 onTabSelected = { index ->
                     selectedTab = index
-                    if (index == 1) { // Navegar a buttonScreen cuando se selecciona "Classes"
-                        navController.navigate("buttonScreen")
+                    if (index == 1) { // Si selecciona la pestaña de "Classes"
+                        showPasswordDialog = true // Muestra el diálogo de contraseña
                     }
                 }
             )
@@ -75,18 +78,27 @@ fun MainScreen(navController: NavHostController) {
         ) {
             when (selectedTab) {
                 0 -> HomeTabContent()
-                //1 -> ClassesTabContent(navController) // Esto ya no será necesario
+                //1 -> ClassesTabContent(navController) // Eliminamos esto ya que gestionamos desde el dialogo
                 2 -> ProfileTabContent()
                 3 -> StreaksTabContent(navController)
             }
         }
+
+        // Mostrar el diálogo de verificación de contraseña si es necesario
+        if (showPasswordDialog) {
+            PasswordDialog(
+                onDismiss = { showPasswordDialog = false }, // Si se cierra el diálogo, volvemos a la vista principal
+                onPasswordCorrect = {
+                    showPasswordDialog = false
+                    navController.navigate("buttonScreen") // Navegar a buttonScreen solo si la contraseña es correcta
+                }
+            )
+        }
     }
-
-
-
-
-
 }
+
+
+
 
 
 
@@ -108,21 +120,85 @@ fun ProfileTabContent() {
 
 @Composable
 fun ClassesTabContent(navController: NavHostController) {
+    var isButtonEnabled by remember { mutableStateOf(false) }
+    var showPasswordDialog by remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Botón para "Rate your Class!"
+        // Botón para "Rate your Class!" bloqueado hasta que se introduzca la contraseña
         Button(
-            onClick = { navController.navigate("buttonScreen") }, // Navega a ButtonScreen
+            onClick = { showPasswordDialog = true },
             modifier = Modifier.padding(16.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Blue) // Color del botón
+            enabled = isButtonEnabled,
+            colors = ButtonDefaults.buttonColors(containerColor = if (isButtonEnabled) Color.Blue else Color.Gray)
         ) {
             Text("Rate your Class!", color = Color.White)
         }
+
+        // Mostrar el diálogo para introducir la contraseña
+        if (showPasswordDialog) {
+            PasswordDialog(
+                onDismiss = { showPasswordDialog = false },
+                onPasswordCorrect = { isButtonEnabled = true }
+            )
+        }
     }
 }
+
+@Composable
+fun PasswordDialog(onDismiss: () -> Unit, onPasswordCorrect: () -> Unit) {
+    var password by remember { mutableStateOf("") }
+    var showError by remember { mutableStateOf(false) }  // Para controlar si se muestra el error
+    val correctPassword = "A123456"
+
+    AlertDialog(
+        onDismissRequest = onDismiss, // Al presionar fuera, se ejecuta el onDismiss
+        title = { Text(text = "Enter Password") },
+        text = {
+            Column {
+                Text(text = "Please enter the password to enable the button:")
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = password,
+                    onValueChange = { password = it },
+                    label = { Text("Password") },
+                    visualTransformation = PasswordVisualTransformation()
+                )
+                // Mostrar mensaje de error si la contraseña es incorrecta
+                if (showError) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "Incorrect password, please try again.",
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    if (password == correctPassword) {
+                        onPasswordCorrect() // Contraseña correcta, habilitar botón
+                    } else {
+                        showError = true // Mostrar error si es incorrecta
+                    }
+                }
+            ) {
+                Text("OK")
+            }
+        },
+        dismissButton = {
+            Button(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
+}
+
+
 
 @Composable
 fun HomeTabContent() {
