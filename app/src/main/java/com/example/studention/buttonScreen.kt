@@ -16,6 +16,7 @@ import androidx.navigation.NavHostController
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.text.style.TextAlign
+import streakDays
 
 
 @Composable
@@ -132,7 +133,11 @@ fun PositiveScreen(navController: NavHostController) {
 
             // Button to submit the review
             Button(
-                onClick = { navController.navigate("main") }, // Navigate to MainScreen
+                onClick = { navController.navigate("main")
+
+                  streakDays += 1
+
+                          }, // Navigate to MainScreen
                 modifier = Modifier.padding(top = 16.dp)
             ) {
                 Text("Submit Review")
