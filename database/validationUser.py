@@ -1,3 +1,4 @@
+
 from pydantic import BaseModel
 from google.cloud import firestore
 
@@ -12,7 +13,6 @@ class User(BaseModel):
 
 
 # Método para obtener datos de Firestore y guardarlos en la API
-@app.get("/users")
 def get_users():
     docs = db.collection("users").stream()
     users = []
