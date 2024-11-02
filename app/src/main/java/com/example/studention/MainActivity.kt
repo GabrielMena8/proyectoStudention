@@ -10,12 +10,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import StreaksTabContent
+import ValidarUser
 import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.pm.PackageManager
 
 import android.os.Build
+import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -27,9 +29,24 @@ import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
 
+
+
 class MainActivity : ComponentActivity() {
+    private lateinit var validarUser: ValidarUser
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        validarUser = ValidarUser(this)
+        validarUser.agregarDatos("Andres","29883404","A1-202",4.5,"Pilar Cuencas")
+        validarUser.obtenerCorreoUsuarioLogueado(
+            onSuccess = { correo ->
+                Log.d("TAG", "Correo del usuario logueado: $correo")
+            },
+            onFailure = { e ->
+                Log.w("TAG", "Error al obtener el correo", e)
+            }
+        )
+
 
         setContent {
             MyApp()
@@ -37,6 +54,7 @@ class MainActivity : ComponentActivity() {
 
         createNotificationChannel()
         scheduleDailyReminder()
+
 
 
     }
