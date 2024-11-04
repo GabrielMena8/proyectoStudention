@@ -57,11 +57,11 @@ def update_vote1(vote_id: str):
             return vote
     return {"message": "Vote not found"}
 
-@app.put("/votes/{vote_id}/button2") 
-def update_vote2(vote_id: str): 
+@app.put("/votes/{vote_id}/button1") 
+def update_vote1(vote_id: str): 
     for vote in votes: 
         if vote["id"] == vote_id: 
-            vote["boton2"] += 1 
+            vote["boton1"] += 1 
             update_firebase(vote) 
             return vote 
         return {"message": "Vote not found"}
