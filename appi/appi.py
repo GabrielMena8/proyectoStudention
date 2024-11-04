@@ -2,6 +2,14 @@ from random import randint
 from typing import Optional
 from fastapi import FastAPI
 from pydantic import BaseModel
+import firebase_admin
+from firebase_admin import credentials, db
+
+cred = credentials.Certificate("path/to/your-firebase-adminsdk.json")
+firebase_admin.initialize_app(cred, {
+    'databaseURL': 'https://your-database-name.firebaseio.com'
+})
+
 
 app = FastAPI()
 
@@ -24,6 +32,10 @@ def read_root():
 def get_votes():
     return votes
 
+def update_firebase(vote): 
+    ref = db.reference(f'votes/{vote["id"]}') 
+    ref.set(vote)
+
 @app.post("/votes")
 def save_vote(vote: Vote):
     vote.id = len(votes) + 1
@@ -45,6 +57,14 @@ def update_vote1(vote_id: str):
             return vote
     return {"message": "Vote not found"}
 
+@app.put("/votes/{vote_id}/button2") 
+def update_vote2(vote_id: str): 
+    for vote in votes: 
+        if vote["id"] == vote_id: 
+            vote["boton2"] += 1 
+            update_firebase(vote) 
+            return vote 
+        return {"message": "Vote not found"}
 @app.put("/votes/{vote_id}")
 def update_vote2(vote_id: str):
     for vote in votes:
@@ -52,3 +72,12 @@ def update_vote2(vote_id: str):
             vote["boton2"] += 1
             return vote
     return {"message": "Vote not found"}
+
+@app.put("/votes/{vote_id}/button2") 
+def update_vote2(vote_id: str): 
+    for vote in votes: 
+        if vote["id"] == vote_id: 
+            vote["boton2"] += 1 
+            update_firebase(vote) 
+            return vote 
+        return {"message": "Vote not found"}
