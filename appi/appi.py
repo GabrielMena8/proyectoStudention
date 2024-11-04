@@ -2,7 +2,7 @@ from random import randint
 from typing import Optional
 from fastapi import FastAPI
 from pydantic import BaseModel
-import firebase_admin 
+import firebase_admin
 from firebase_admin import credentials, db
 
 cred = credentials.Certificate("path/to/your-firebase-adminsdk.json")
