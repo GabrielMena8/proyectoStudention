@@ -6,27 +6,15 @@ from pydantic import BaseModel
 app = FastAPI()
 
 votes = [{
-"id": 1,
-"code": "53273404",
-"boton1": True,
-"boton2": False
+"id": "FPTSP071",
+"boton1": 0,
+"boton2": 0
 }]
 class Vote(BaseModel):
-    id : Optional[int] 
-    code: Optional[str] 
-    boton1: bool
-    boton2: bool
+    id : str 
+    boton1: int
+    boton2: int
 
-def random_code():
-  random_list = []
-
-  for i in range(8):
-    x = randint(0,9) 
-    random_list.append(str(x)) 
-  
-  code = ''.join(random_list) 
-  
-  return code  
 
 @app.get("/")
 def read_root():
@@ -38,11 +26,9 @@ def get_votes():
 
 @app.post("/votes")
 def save_vote(vote: Vote):
-    vote.code = random_code()
     vote.id = len(votes) + 1
     votes.append(vote.model_dump())
     return votes[-1]
-
 
 @app.get("/votes/{vote_id}")
 def get_vote(vote_id: int):
@@ -52,10 +38,17 @@ def get_vote(vote_id: int):
     return {"message": "Vote not found"}
 
 @app.put("/votes/{vote_id}")
-def update_vote(vote_id: int, updateVote: Vote):
+def update_vote1(vote_id: str):
     for vote in votes:
         if vote["id"] == vote_id:
-            vote["boton1"] = updateVote.boton1
-            vote["boton2"] = updateVote.boton2
+            vote["boton1"] += 1
+            return vote
+    return {"message": "Vote not found"}
+
+@app.put("/votes/{vote_id}")
+def update_vote2(vote_id: str):
+    for vote in votes:
+        if vote["id"] == vote_id:
+            vote["boton2"] += 1
             return vote
     return {"message": "Vote not found"}
