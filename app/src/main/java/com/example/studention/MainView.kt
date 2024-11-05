@@ -97,7 +97,7 @@ fun MainScreen(navController: NavHostController) {
             contentAlignment = Alignment.Center
         ) {
             when (selectedTab) {
-                0 -> HomeTabContent()
+                //0 -> HomeTabContent()
                 2 -> ProfileTabContent()
                 3 -> StreaksTabContent(navController)
             }

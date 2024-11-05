@@ -21,8 +21,12 @@ workRuntimeKtx = "2.9.1"
 firebaseFirestoreKtx = "25.1.1"
 firebaseMessagingKtx = "24.0.3"
 firebaseAuthKtx = "23.1.0"
+
+appcompat = "1.7.0"
+
 gamesActivity = "3.0.5"
 gamesTextInput = "3.0.4"
+
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -53,8 +57,12 @@ retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit
 firebase-firestore-ktx = { group = "com.google.firebase", name = "firebase-firestore-ktx", version.ref = "firebaseFirestoreKtx" }
 firebase-messaging-ktx = { group = "com.google.firebase", name = "firebase-messaging-ktx", version.ref = "firebaseMessagingKtx" }
 firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebaseAuthKtx" }
+
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+
 androidx-games-activity = { group = "androidx.games", name = "games-activity", version.ref = "gamesActivity" }
 androidx-games-text-input = { group = "androidx.games", name = "games-text-input", version.ref = "gamesTextInput" }
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
