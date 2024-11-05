@@ -14,10 +14,12 @@ db = firestore.client()
 app = FastAPI()
 
 votes = [{
+"id": "1",
 "boton1": 0,
 "boton2": 0
 }]
 class Vote(BaseModel): 
+    id: str
     boton1: int
     boton2: int
 
@@ -46,19 +48,21 @@ def get_vote(vote_id: int):
             return vote
     return {"message": "Vote not found"}
 
-@app.put("/votes/FPTSP071/boton1") 
-def update_vote1(): 
+@app.put("/votes/{vote_id}/boton1") 
+def update_vote1(vote_id: str): 
     for vote in votes: 
-        vote["boton1"] += 1 
-        update_firebase(vote) 
-        return vote 
-    return {"message": "Vote not found"}
+        if vote["id"] == vote_id:
+            vote["boton1"] += 1 
+            update_firebase(vote) 
+            return vote 
+        return {"message": "Vote not found"}
 
-@app.put("/votes/FPTSP071/boton2") 
-def update_vote2(vote_id: str): 
-    for vote in votes:   
-        vote["boton2"] += 1
-        update_firebase(vote)  
-        return vote 
-    return {"message": "Vote not found"}
+@app.put("/votes/{vote_id}}/boton2") 
+def update_vote2(vote_id: int): 
+    for vote in votes:
+        if vote["id"] == vote_id:   
+            vote["boton2"] += 1
+            update_firebase(vote)  
+            return vote 
+        return {"message": "Vote not found"}
 
