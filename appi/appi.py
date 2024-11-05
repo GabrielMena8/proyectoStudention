@@ -5,7 +5,7 @@ from pydantic import BaseModel
 import firebase_admin 
 from firebase_admin import credentials, firestore
 
-cred = credentials.Certificate("database/studention-11f13-firebase-adminsdk-4fnmw-0b8a14d21a.json")
+cred = credentials.Certificate("studention-11f13-firebase-adminsdk-4fnmw-0b8a14d21a.json")
 firebase_admin.initialize_app(cred)
 
 db = firestore.client()
