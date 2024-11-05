@@ -2,4 +2,11 @@
 plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.jetbrains.kotlin.android) apply false
+<<<<<<< Updated upstream
 }
+=======
+    id("com.google.gms.google-services") version "4.3.15" apply false
+
+}
+
+>>>>>>> Stashed changes
