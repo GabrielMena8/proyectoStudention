@@ -33,7 +33,7 @@ def get_votes():
     return votes
 
 async def update_firebase(vote): 
-    doc_ref = db.collection('voto').document(vote["id"])
+    doc_ref = db.collection('voto').document(int(vote["id"]))
     await doc_ref.set(vote)
 
 @app.post("/votes")
