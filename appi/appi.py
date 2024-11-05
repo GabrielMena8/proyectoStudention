@@ -49,7 +49,7 @@ def get_vote(vote_id: int):
             return vote
     return {"message": "Vote not found"}
 
-@app.put("/votes/{vote_id}/1") 
+@app.put("/votes/{vote_id}/boton1") 
 def update_vote1(vote_id: str): 
     for vote in votes: 
         if vote["id"] == vote_id: 
@@ -58,7 +58,7 @@ def update_vote1(vote_id: str):
             return vote 
         return {"message": "Vote not found"}
 
-@app.put("/votes/{vote_id}/2") 
+@app.put("/votes/{vote_id}/boton2") 
 def update_vote2(vote_id: str): 
     for vote in votes: 
         if vote["id"] == vote_id: 
