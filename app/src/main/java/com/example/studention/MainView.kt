@@ -279,7 +279,7 @@ fun PasswordDialog(onDismiss: () -> Unit, onPasswordCorrect: () -> Unit) {
 
 
 
-@Composable
+/*@Composable
     fun HomeTabContent() {
         val scope = rememberCoroutineScope()
         var code by remember { mutableStateOf("") } // Código recibido de la API
@@ -333,7 +333,7 @@ fun PasswordDialog(onDismiss: () -> Unit, onPasswordCorrect: () -> Unit) {
         if (showPopup) {
             popUpCode(code) { showPopup = false }
         }
-    }
+    }*/
 
 
 
