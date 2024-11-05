@@ -14,17 +14,18 @@ db = firestore.client()
 app = FastAPI()
 
 votes = [{
-"id": "1",
+"id": "FPTSP071",
 "boton1": 0,
 "boton2": 0
 }]
+
 class Vote(BaseModel): 
     id: str
     boton1: int
     boton2: int
 
 async def update_firebase(vote): 
-    doc_ref = db.collection('voto').document("FPTSP071")
+    doc_ref = db.collection('voto').document(vote["id"])
     await doc_ref.set(vote)
 
 @app.get("/")
