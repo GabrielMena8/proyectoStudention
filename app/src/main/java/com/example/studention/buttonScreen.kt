@@ -1,5 +1,6 @@
 package com.example.studention
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
@@ -70,7 +71,7 @@ fun ButtonScreen(navController: NavHostController) {
 }
 
 @Composable
-fun PositiveScreen(navController: NavHostController) {
+fun PositiveScreen(navController: NavHostController, carnet: String, validarUser: ValidarUser) {
     // Soft green background
     Box(
         modifier = Modifier
@@ -133,11 +134,18 @@ fun PositiveScreen(navController: NavHostController) {
 
             // Button to submit the review
             Button(
-                onClick = { navController.navigate("main")
-
-                  streakDays += 1
-
-                          }, // Navigate to MainScreen
+                onClick = {
+                    validarUser.modificarRacha(carnet,
+                        onSuccess = {
+                            navController.navigate("streaks") {
+                                popUpTo("buttonScreen") { inclusive = true } // Avoid returning to ButtonScreen
+                            }
+                        },
+                        onFailure = { e ->
+                            Log.w("TAG", "Error al actualizar la racha", e)
+                        }
+                    )
+                },
                 modifier = Modifier.padding(top = 16.dp)
             ) {
                 Text("Submit Review")
@@ -147,7 +155,7 @@ fun PositiveScreen(navController: NavHostController) {
 }
 
 @Composable
-fun NegativeScreen(navController: NavHostController) {
+fun NegativeScreen(navController: NavHostController, carnet: String, validarUser: ValidarUser) {
     // Soft red background
     Box(
         modifier = Modifier
@@ -210,7 +218,18 @@ fun NegativeScreen(navController: NavHostController) {
 
             // Button to submit the review
             Button(
-                onClick = { navController.navigate("main") }, // Navigate to MainScreen
+                onClick = {
+                    validarUser.modificarRacha(carnet,
+                        onSuccess = {
+                            navController.navigate("streaks") {
+                                popUpTo("buttonScreen") { inclusive = true } // Avoid returning to ButtonScreen
+                            }
+                        },
+                        onFailure = { e ->
+                            Log.w("TAG", "Error al actualizar la racha", e)
+                        }
+                    )
+                },
                 modifier = Modifier.padding(top = 16.dp)
             ) {
                 Text("Submit Review")
@@ -218,4 +237,3 @@ fun NegativeScreen(navController: NavHostController) {
         }
     }
 }
-

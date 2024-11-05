@@ -67,7 +67,6 @@ import retrofit2.Response
 
 fun MainScreen(navController: NavHostController) {
     var selectedTab by remember { mutableStateOf(0) }
-    var showPasswordDialog by remember { mutableStateOf(false) }
 
     // Definimos los colores para cada pestaña
     val backgroundColor = when (selectedTab) {
@@ -85,7 +84,7 @@ fun MainScreen(navController: NavHostController) {
                 selectedTabIndex = selectedTab,
                 onTabSelected = { index ->
                     selectedTab = index
-                    if (index == 1) showPasswordDialog = true
+                    if (index == 1) navController.navigate("buttonScreen")
                 }
             )
         }
@@ -101,16 +100,6 @@ fun MainScreen(navController: NavHostController) {
                 2 -> ProfileTabContent()
                 3 -> StreaksTabContent(navController)
             }
-        }
-
-        if (showPasswordDialog) {
-            PasswordDialog(
-                onDismiss = { showPasswordDialog = false },
-                onPasswordCorrect = {
-                    showPasswordDialog = false
-                    navController.navigate("buttonScreen")
-                }
-            )
         }
     }
 }
@@ -192,30 +181,18 @@ var correctPassword = ""
 
 @Composable
 fun ClassesTabContent(navController: NavHostController) {
-    var isButtonEnabled by remember { mutableStateOf(false) }
-    var showPasswordDialog by remember { mutableStateOf(false) }
-
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Botón para "Rate your Class!" bloqueado hasta que se introduzca la contraseña
+        // Botón para "Rate your Class!" habilitado directamente
         Button(
-            onClick = { showPasswordDialog = true },
+            onClick = { navController.navigate("buttonScreen") },
             modifier = Modifier.padding(16.dp),
-            enabled = isButtonEnabled,
-            colors = ButtonDefaults.buttonColors(containerColor = if (isButtonEnabled) Color.Blue else Color.Gray)
+            colors = ButtonDefaults.buttonColors(containerColor = Color.Blue)
         ) {
             Text("Rate your Class!", color = Color.White)
-        }
-
-        // Mostrar el diálogo para introducir la contraseña
-        if (showPasswordDialog) {
-            PasswordDialog(
-                onDismiss = { showPasswordDialog = false },
-                onPasswordCorrect = { isButtonEnabled = true }
-            )
         }
     }
 }
@@ -400,7 +377,7 @@ fun BottomNavigationBar(
                 selected = selectedTabIndex == 2,
                 onClick = { onTabSelected(2) },
                 icon = { Icon(Icons.Default.Person, contentDescription = "Profile") },
-                label = { Text("Profile") }
+                    label = { Text("Classes") }
             )
 
             BottomNavigationItem(

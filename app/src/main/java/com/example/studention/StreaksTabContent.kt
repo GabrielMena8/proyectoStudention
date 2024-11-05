@@ -14,25 +14,25 @@ import androidx.navigation.NavHostController
 import com.database.database.UsersUtil
 import com.google.firebase.firestore.FirebaseFirestore
 
+
 @Composable
 fun StreaksTabContent(navController: NavHostController) {
     val db = FirebaseFirestore.getInstance()
     var rankingList by remember { mutableStateOf<List<RankingItemData>>(emptyList()) }
 
-    // Llamar a la función para obtener el ranking de estudiantes de la base de datos
     LaunchedEffect(Unit) {
-        val usersUtil = UsersUtil()
-        usersUtil.obtenerEstudiantePorRacha(
-            onSuccess = { estudiantes ->
-                rankingList = estudiantes.mapIndexed { index, estudiante ->
+        val validarUser = ValidarUser(navController.context)
+        validarUser.obtenerEstudiantesPorRacha(
+            onSuccess = { estudiantes: List<RankingItemData> ->
+                rankingList = estudiantes.mapIndexed { index: Int, estudiante: RankingItemData ->
                     RankingItemData(
-                        name = estudiante["nombre"] as String,
-                        days = (estudiante["racha"] as Long).toInt(), // Cast to Long and then convert to Int
+                        name = estudiante.name,
+                        days = estudiante.days,
                         rank = index + 1
                     )
                 }
             },
-            onFailure = { e ->
+            onFailure = { e: Exception ->
                 Log.w("TAG", "Error al obtener el ranking de estudiantes", e)
             }
         )
@@ -152,7 +152,7 @@ fun RoadmapItem(rankingItem: RankingItemData, isLastItem: Boolean) {
 
             // Barra de progreso de racha
             LinearProgressIndicator(
-                progress = { (rankingItem.days / 30f).coerceIn(0f, 1f) },
+                progress = (rankingItem.days / 30f).coerceIn(0f, 1f),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(8.dp)

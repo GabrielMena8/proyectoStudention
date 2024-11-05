@@ -3,7 +3,8 @@ package com.example.studention
 
 import MainScreen
 
-
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -22,6 +23,15 @@ import com.database.database.UsersUtil;
 
 import android.os.Build
 import android.util.Log
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -163,46 +173,65 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MyApp() {
     val navController = rememberNavController()
+    val context = LocalContext.current
+    val validarUser = remember { ValidarUser(context) }
+    var carnet by remember { mutableStateOf<String?>(null) }
 
+    LaunchedEffect(Unit) {
+        validarUser.obtenerCarnetUsuarioActual(
+            onSuccess = { carnetValue ->
+                carnet = carnetValue
+            },
+            onFailure = { e ->
+                Log.w("TAG", "Error al obtener el carnet", e)
+            }
+        )
+    }
 
-    // NavHost que gestiona las pantallas de la app
-
-    NavHost(
-        navController = navController,
-        startDestination = "welcome"
-    ) {
-        composable("welcome") {
-            WelcomeScreen(
-                onLoginClick = { navController.navigate("login") },
-                onRegisterClick = { navController.navigate("register") }
-            )
+    if (carnet != null) {
+        NavHost(
+            navController = navController,
+            startDestination = "welcome"
+        ) {
+            composable("welcome") {
+                WelcomeScreen(
+                    onLoginClick = { navController.navigate("login") },
+                    onRegisterClick = { navController.navigate("register") }
+                )
+            }
+            composable("login") {
+                LoginScreen(navController)
+            }
+            composable("register") {
+                RegisterScreen(navController)
+            }
+            composable("main") {
+                MainScreen(navController)
+            }
+            composable("streaks") {
+                StreaksTabContent(navController)
+            }
+            composable("buttonScreen") {
+                ButtonScreen(navController)
+            }
+            composable("positive") {
+                PositiveScreen(navController, carnet!!, validarUser)
+            }
+            composable("negative") {
+                NegativeScreen(navController, carnet!!, validarUser)
+            }
         }
-        composable("login") {
-            LoginScreen(navController)
-        }
-
-        composable("register") {
-            RegisterScreen(
-                navController = navController
-            )
-        }
-        composable("main") {
-            MainScreen(navController)
-        }
-        composable("streaks") {
-            StreaksTabContent(navController)
-        }
-        composable("buttonScreen") {
-            ButtonScreen(navController)
-        }
-        composable("positive") {
-            PositiveScreen(navController)
-        }
-        composable("negative") {
-            NegativeScreen(navController)
+    } else {
+        // Show a loading screen or some placeholder while carnet is being fetched
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
         }
     }
 }
+
 
 
 

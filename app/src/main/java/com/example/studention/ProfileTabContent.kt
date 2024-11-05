@@ -16,7 +16,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.database.database.UsersUtil
-import com.google.androidgamesdk.gametextinput.Settings
+//import com.google.androidgamesdk.gametextinput.Settings
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
