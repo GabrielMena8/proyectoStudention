@@ -33,8 +33,8 @@ def get_votes():
     return votes
 
 def update_firebase(vote): 
-    ref = db.reference(f'votes/{vote["id"]}') 
-    ref.set(vote)
+    doc_ref = db.collection('voto').document(vote["id"]) 
+    doc_ref.set(vote)
 
 @app.post("/votes")
 def save_vote(vote: Vote):
