@@ -5,10 +5,10 @@ from pydantic import BaseModel
 import firebase_admin
 from firebase_admin import credentials, firestore
 
-#cred = credentials.Certificate("studention-11f13-firebase-adminsdk-4fnmw-0b8a14d21a.json")
-#firebase_admin.initialize_app(cred)
+cred = credentials.Certificate("studention-11f13-firebase-adminsdk-4fnmw-0b8a14d21a.json")
+firebase_admin.initialize_app(cred)
 
-#db = firestore.client()
+db = firestore.client()
 
 
 app = FastAPI()
@@ -32,9 +32,9 @@ def read_root():
 def get_votes():
     return votes
 
-#def update_firebase(vote): 
-    doc_ref = db.collection('voto').document(vote["id"]) 
-    doc_ref.set(vote)
+async def update_firebase(vote): 
+    doc_ref = db.collection('voto').document(vote["id"])
+    await doc_ref.set(vote)
 
 @app.post("/votes")
 def save_vote(vote: Vote):
@@ -54,7 +54,7 @@ def update_vote1(vote_id: str):
     for vote in votes: 
         if vote["id"] == vote_id: 
             vote["boton1"] += 1 
-            #update_firebase(vote) 
+            update_firebase(vote) 
             return vote 
         return {"message": "Vote not found"}
 
@@ -63,6 +63,6 @@ def update_vote2(vote_id: str):
     for vote in votes: 
         if vote["id"] == vote_id: 
             vote["boton2"] += 1 
-            #update_firebase(vote) 
+            update_firebase(vote) 
             return vote 
         return {"message": "Vote not found"}
