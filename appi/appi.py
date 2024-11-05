@@ -25,7 +25,7 @@ class Vote(BaseModel):
 
 async def update_firebase(vote): 
     doc_ref = db.collection('voto').document("FPTSP071")
-    await doc_ref.set(vote)
+    return await doc_ref.set(vote)
 
 @app.get("/")
 def read_root():
