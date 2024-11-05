@@ -49,16 +49,7 @@ def get_vote(vote_id: int):
             return vote
     return {"message": "Vote not found"}
 
-@app.put("/votes/{vote_id}")
-def update_vote1(vote_id: str):
-    for vote in votes:
-        if vote["id"] == vote_id:
-            vote["boton1"] += 1
-            update_firebase(vote)
-            return vote
-    return {"message": "Vote not found"}
-
-@app.put("/votes/{vote_id}/button1") 
+@app.put("/votes/{vote_id}/1") 
 def update_vote1(vote_id: str): 
     for vote in votes: 
         if vote["id"] == vote_id: 
@@ -66,16 +57,8 @@ def update_vote1(vote_id: str):
             update_firebase(vote) 
             return vote 
         return {"message": "Vote not found"}
-@app.put("/votes/{vote_id}")
-def update_vote2(vote_id: str):
-    for vote in votes:
-        if vote["id"] == vote_id:
-            vote["boton2"] += 1
-            update_firebase(vote)
-            return vote
-    return {"message": "Vote not found"}
 
-@app.put("/votes/{vote_id}/button2") 
+@app.put("/votes/{vote_id}/2") 
 def update_vote2(vote_id: str): 
     for vote in votes: 
         if vote["id"] == vote_id: 
