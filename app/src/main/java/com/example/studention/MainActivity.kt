@@ -12,10 +12,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import StreaksTabContent
+import ValidarUser
 import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.pm.PackageManager
+
+
+import com.database.database.UsersUtil;
 
 import android.os.Build
 import android.util.Log
@@ -27,6 +31,7 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
+import com.google.firebase.messaging.FirebaseMessaging
 
 
 
@@ -38,7 +43,20 @@ class MainActivity : ComponentActivity() {
     private lateinit var validarUser: ValidarUser
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
+
         super.onCreate(savedInstanceState)
+
+        val userUtils = UsersUtil()
+       userUtils.obtenerEstudiantePorRacha(
+            onSuccess = { estudiante ->
+                Log.d("TAG", "Estudiante con racha: $estudiante")
+            },
+            onFailure = { e ->
+                Log.w("TAG", "Error al obtener el estudiante", e)
+            }
+        )
+
         validarUser = ValidarUser(this)
         //validarUser.agregarDatos("Andres","29883404","A1-202",4.5,"Pilar Cuencas")
         validarUser.obtenerCorreoUsuarioLogueado(
@@ -51,6 +69,18 @@ class MainActivity : ComponentActivity() {
         )
 
 
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Log.w(TAG, "Fetching FCM registration token failed", task.exception)
+                return@addOnCompleteListener
+            }
+
+            // Obtener el token de FCM
+            val token = task.result
+            Log.d(TAG, "FCM Token: $token")
+            // Envíalo a tu servidor si es necesario
+        }
+
         setContent {
             MyApp()
         }
@@ -58,20 +88,20 @@ class MainActivity : ComponentActivity() {
         createNotificationChannel()
         scheduleDailyReminder()
 
-
-
+    }
+    companion object {
+        private const val TAG = "MainActivity"
     }
 
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = "Studention"
-            val descriptionText = "Studention notifications"
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val channel = NotificationChannel("studention", name, importance).apply {
-                description = descriptionText
-            }
-            val notificationManager: NotificationManager = getSystemService(NotificationManager::class.java)
-            notificationManager.createNotificationChannel(channel)
+            val channel = NotificationChannel(
+                "default_channel_id",
+                "Default Channel",
+                NotificationManager.IMPORTANCE_DEFAULT
+            )
+            val manager = getSystemService(NotificationManager::class.java)
+            manager?.createNotificationChannel(channel)
         }
     }
 
@@ -134,6 +164,9 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MyApp() {
     val navController = rememberNavController()
+
+
+    // NavHost que gestiona las pantallas de la app
 
     NavHost(
         navController = navController,

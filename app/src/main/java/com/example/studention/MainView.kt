@@ -16,6 +16,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 
+
+
+
+
 import androidx.compose.material3.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -48,7 +52,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import com.example.studention.ProfileTabContent
 import com.example.studention.RetrofitInstance
+import com.example.studention.StreaksTabContent
 import com.example.studention.showDailyReminder
 import kotlinx.coroutines.GlobalScope
 
@@ -182,18 +188,7 @@ var correctPassword = ""
 //Boton para debug de notificaciones
 
 
-@Composable
-fun ProfileTabContent() {
 
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-
-        Text(text = "Profile")
-    }
-}
 
 @Composable
 fun ClassesTabContent(navController: NavHostController) {
@@ -279,8 +274,10 @@ fun PasswordDialog(onDismiss: () -> Unit, onPasswordCorrect: () -> Unit) {
 
 
 
-/*@Composable
+@Composable
     fun HomeTabContent() {
+
+        /*
         val scope = rememberCoroutineScope()
         var code by remember { mutableStateOf("") } // Código recibido de la API
         var showPopup by remember { mutableStateOf(false) } // Estado del popup
@@ -333,7 +330,9 @@ fun PasswordDialog(onDismiss: () -> Unit, onPasswordCorrect: () -> Unit) {
         if (showPopup) {
             popUpCode(code) { showPopup = false }
         }
-    }*/
+        */
+
+    }
 
 
 
@@ -450,7 +449,7 @@ fun BottomNavigationItem(
 
 
 
-
+/*
 @Composable
 fun StreaksTabContent(navController: NavHostController) {
     // Datos de prueba para la racha
@@ -653,4 +652,4 @@ data class RankingItemData(
     val name: String,
     val days: Int,
     val rank: Int
-)
+)*/
