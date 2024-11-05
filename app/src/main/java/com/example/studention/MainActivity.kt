@@ -27,6 +27,7 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
+import com.google.firebase.messaging.FirebaseMessaging
 
 
 
@@ -48,6 +49,18 @@ class MainActivity : ComponentActivity() {
         )
 
 
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Log.w(TAG, "Fetching FCM registration token failed", task.exception)
+                return@addOnCompleteListener
+            }
+
+            // Obtener el token de FCM
+            val token = task.result
+            Log.d(TAG, "FCM Token: $token")
+            // Envíalo a tu servidor si es necesario
+        }
+
         setContent {
             MyApp()
         }
@@ -55,8 +68,9 @@ class MainActivity : ComponentActivity() {
         createNotificationChannel()
         scheduleDailyReminder()
 
-
-
+    }
+    companion object {
+        private const val TAG = "MainActivity"
     }
 
     private fun createNotificationChannel() {
