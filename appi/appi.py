@@ -25,7 +25,7 @@ class Vote(BaseModel):
 
 async def update_firebase(vote): 
     doc_ref = db.collection('voto').document("FPTSP071")
-    return await doc_ref.set(vote)
+    await doc_ref.set(vote)
 
 @app.get("/")
 def read_root():
@@ -49,7 +49,7 @@ def get_vote(vote_id: int):
     return {"message": "Vote not found"}
 
 @app.put("/votes/{vote_id}/boton1") 
-def update_vote1(vote_id: str): 
+async def update_vote1(vote_id: str): 
     for vote in votes: 
         if vote["id"] == vote_id:
             vote["boton1"] += 1 
@@ -58,7 +58,7 @@ def update_vote1(vote_id: str):
         return {"message": "Vote not found"}
 
 @app.put("/votes/{vote_id}}/boton2") 
-def update_vote2(vote_id: str): 
+async def update_vote2(vote_id: str): 
     for vote in votes:
         if vote["id"] == vote_id:   
             vote["boton2"] += 1
