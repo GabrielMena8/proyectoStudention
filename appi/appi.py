@@ -3,7 +3,7 @@ from typing import Optional
 from fastapi import FastAPI
 from pydantic import BaseModel
 import firebase_admin
-from firebase_admin import credentials, db
+from firebase_admin import credentials, firestore
 
 cred = credentials.Certificate("studention-11f13-firebase-adminsdk-4fnmw-0b8a14d21a.json")
 firebase_admin.initialize_app(cred)
@@ -14,15 +14,18 @@ db = firestore.client()
 app = FastAPI()
 
 votes = [{
-"id": "FPTSP071",
+"id": "1",
 "boton1": 0,
 "boton2": 0
 }]
-class Vote(BaseModel):
-    id : str 
+class Vote(BaseModel): 
+    id: str
     boton1: int
     boton2: int
 
+async def update_firebase(vote): 
+    doc_ref = db.collection('voto').document("FPTSP071")
+    await doc_ref.set(vote)
 
 @app.get("/")
 def read_root():
@@ -31,10 +34,6 @@ def read_root():
 @app.get("/votes")
 def get_votes():
     return votes
-
-def update_firebase(vote): 
-    ref = db.reference(f'votes/{vote["id"]}') 
-    ref.set(vote)
 
 @app.post("/votes")
 def save_vote(vote: Vote):
@@ -49,35 +48,21 @@ def get_vote(vote_id: int):
             return vote
     return {"message": "Vote not found"}
 
-@app.put("/votes/{vote_id}")
-def update_vote1(vote_id: str):
-    for vote in votes:
-        if vote["id"] == vote_id:
-            vote["boton1"] += 1
-            return vote
-    return {"message": "Vote not found"}
-
-@app.put("/votes/{vote_id}/button1") 
+@app.put("/votes/{vote_id}/boton1") 
 def update_vote1(vote_id: str): 
     for vote in votes: 
-        if vote["id"] == vote_id: 
+        if vote["id"] == vote_id:
             vote["boton1"] += 1 
             update_firebase(vote) 
             return vote 
         return {"message": "Vote not found"}
-@app.put("/votes/{vote_id}")
-def update_vote2(vote_id: str):
-    for vote in votes:
-        if vote["id"] == vote_id:
-            vote["boton2"] += 1
-            return vote
-    return {"message": "Vote not found"}
 
-@app.put("/votes/{vote_id}/button2") 
+@app.put("/votes/{vote_id}}/boton2") 
 def update_vote2(vote_id: str): 
-    for vote in votes: 
-        if vote["id"] == vote_id: 
-            vote["boton2"] += 1 
-            update_firebase(vote) 
+    for vote in votes:
+        if vote["id"] == vote_id:   
+            vote["boton2"] += 1
+            update_firebase(vote)  
             return vote 
         return {"message": "Vote not found"}
+
