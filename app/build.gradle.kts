@@ -79,19 +79,17 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     // Para tareas periódicas
     implementation(libs.androidx.work.runtime.ktx)
+    implementation ("com.google.android.gms:play-services-base:18.5.0")
     implementation(platform("com.google.firebase:firebase-bom:33.5.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-messaging:24.0.3")
     implementation(libs.firebase.messaging)
-
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
 
     // Corutinas para el ciclo de vida
     implementation(libs.androidx.lifecycle.runtime.ktx.v262)  // Para lifecycleScope y viewModelScope
 
-
-
-
-
 }
+
