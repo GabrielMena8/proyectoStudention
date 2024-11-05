@@ -11,8 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import StreaksTabContent
-import ValidarUser
+
 import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
