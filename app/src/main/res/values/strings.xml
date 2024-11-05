@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Studention</string>
+
+    <string name="default_notification_channel_id">default_notification_channel_id</string>
 </resources>

@@ -5,10 +5,10 @@ from pydantic import BaseModel
 import firebase_admin
 from firebase_admin import credentials, db
 
-cred = credentials.Certificate("path/to/your-firebase-adminsdk.json")
-firebase_admin.initialize_app(cred, {
-    'databaseURL': 'https://your-database-name.firebaseio.com'
-})
+cred = credentials.Certificate("studention-11f13-firebase-adminsdk-4fnmw-0b8a14d21a.json")
+firebase_admin.initialize_app(cred)
+
+db = firestore.client()
 
 
 app = FastAPI()
