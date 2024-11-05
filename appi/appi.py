@@ -23,6 +23,9 @@ class Vote(BaseModel):
     boton1: int
     boton2: int
 
+async def update_firebase(vote): 
+    doc_ref = db.collection('voto').document(vote["id"])
+    await doc_ref.set(vote)
 
 @app.get("/")
 def read_root():
@@ -31,10 +34,6 @@ def read_root():
 @app.get("/votes")
 def get_votes():
     return votes
-
-async def update_firebase(vote): 
-    doc_ref = db.collection('voto').document(int(vote["id"]))
-    await doc_ref.set(vote)
 
 @app.post("/votes")
 def save_vote(vote: Vote):
@@ -54,7 +53,6 @@ def update_vote1(vote_id: str):
     for vote in votes: 
         if vote["id"] == vote_id: 
             vote["boton1"] += 1 
-            update_firebase(vote) 
             return vote 
         return {"message": "Vote not found"}
 
@@ -63,6 +61,21 @@ def update_vote2(vote_id: str):
     for vote in votes: 
         if vote["id"] == vote_id: 
             vote["boton2"] += 1 
+            return vote 
+        return {"message": "Vote not found"}
+
+@app.put("/votes/{vote_id}/boton1")
+def update(vote_id: str): 
+    for vote in votes: 
+        if vote["id"] == vote_id: 
+            update_firebase(vote) 
+            return vote 
+        return {"message": "Vote not found"}
+
+@app.put("/votes/{vote_id}/boton2")
+def update(vote_id: str): 
+    for vote in votes: 
+        if vote["id"] == vote_id: 
             update_firebase(vote) 
             return vote 
         return {"message": "Vote not found"}
