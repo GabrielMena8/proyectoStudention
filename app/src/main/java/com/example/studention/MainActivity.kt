@@ -2,6 +2,7 @@
 package com.example.studention
 
 import MainScreen
+
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -9,12 +10,15 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import StreaksTabContent
+
 import ValidarUser
 import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.pm.PackageManager
+
+
+import com.database.database.UsersUtil;
 
 import android.os.Build
 import android.util.Log
@@ -35,7 +39,20 @@ class MainActivity : ComponentActivity() {
     private lateinit var validarUser: ValidarUser
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
+
         super.onCreate(savedInstanceState)
+
+        val userUtils = UsersUtil()
+       userUtils.obtenerEstudiantePorRacha(
+            onSuccess = { estudiante ->
+                Log.d("TAG", "Estudiante con racha: $estudiante")
+            },
+            onFailure = { e ->
+                Log.w("TAG", "Error al obtener el estudiante", e)
+            }
+        )
+
         validarUser = ValidarUser(this)
         validarUser.agregarDatos("Andres","29883404","A1-202",4.5,"Pilar Cuencas")
         validarUser.obtenerCorreoUsuarioLogueado(
@@ -132,6 +149,8 @@ class MainActivity : ComponentActivity() {
 fun MyApp() {
     // Controlador de navegación
     val navController = rememberNavController()
+
+
 
     // NavHost que gestiona las pantallas de la app
     NavHost(
