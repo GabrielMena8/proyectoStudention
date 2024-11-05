@@ -5,7 +5,7 @@ from pydantic import BaseModel
 import firebase_admin
 from firebase_admin import credentials, firestore
 
-cred = credentials.Certificate("appi/studention-11f13-firebase-adminsdk-4fnmw-cbd7c02af6.json")
+cred = credentials.Certificate("appi/studention-11f13-firebase-adminsdk-4fnmw-16073fda31.json")
 firebase_admin.initialize_app(cred)
 
 db = firestore.client()
@@ -28,10 +28,12 @@ def update_firebase(vote):
     doc_ref = db.collection('voto').document(vote["id"])
     doc_ref.set(vote)
 
-#def test_firestore(): 
- #   doc_ref = db.collection('voto').document('FPTSP071') 
-  #  doc_ref.set({ 'boton1': 1, 'boton2': 2 }) 
-   # print("Firestore update test complete") 
+def test_firestore(): 
+    try: 
+        doc_ref = db.collection('voto').document('FPTSP071') 
+        doc_ref.set({ 'boton1': 1, 'boton2': 2 }) 
+        print("Firestore update test complete") 
+    except Exception as e: print(f"Error: {e}")
 #test_firestore()
 
 @app.get("/")
