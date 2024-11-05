@@ -176,22 +176,33 @@ fun MyApp() {
     val context = LocalContext.current
     val validarUser = remember { ValidarUser(context) }
     var carnet by remember { mutableStateOf<String?>(null) }
+    var isLoading by remember { mutableStateOf(true) }
 
     LaunchedEffect(Unit) {
         validarUser.obtenerCarnetUsuarioActual(
             onSuccess = { carnetValue ->
                 carnet = carnetValue
+                isLoading = false
             },
             onFailure = { e ->
                 Log.w("TAG", "Error al obtener el carnet", e)
+                isLoading = false
             }
         )
     }
 
-    if (carnet != null) {
+    if (isLoading) {
+        // Show a loading screen or some placeholder while carnet is being fetched
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
+        }
+    } else {
         NavHost(
             navController = navController,
-            startDestination = "welcome"
+            startDestination = if (carnet != null) "main" else "welcome"
         ) {
             composable("welcome") {
                 WelcomeScreen(
@@ -220,14 +231,6 @@ fun MyApp() {
             composable("negative") {
                 NegativeScreen(navController, carnet!!, validarUser)
             }
-        }
-    } else {
-        // Show a loading screen or some placeholder while carnet is being fetched
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator()
         }
     }
 }
