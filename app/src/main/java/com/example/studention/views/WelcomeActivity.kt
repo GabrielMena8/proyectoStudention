@@ -1,4 +1,4 @@
-package com.example.studention
+package com.example.studention.views
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -19,6 +19,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.studention.R
+import com.database.database.Models.RegisterScreen
 
 class WelcomeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

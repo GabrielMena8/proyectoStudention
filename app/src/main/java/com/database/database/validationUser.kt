@@ -1,11 +1,11 @@
 package com.example.studention
 import android.content.Context
 import android.util.Log
+import com.example.studention.views.RankingItemData
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.Calendar
-import java.util.Date
 
 class ValidarUser(context: Context) {
     private val auth: FirebaseAuth

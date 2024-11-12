@@ -1,7 +1,5 @@
 
-package com.example.studention
-
-import MainScreen
+package com.example.studention.views
 
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
@@ -38,6 +36,9 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import com.database.database.Models.DailyReminderWorker
+import com.database.database.Models.RegisterScreen
+import com.example.studention.ValidarUser
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
 import com.google.firebase.messaging.FirebaseMessaging

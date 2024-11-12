@@ -1,4 +1,4 @@
-package com.example.studention
+package com.example.studention.views
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -11,11 +11,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.database.database.UsersUtil
+import com.example.studention.R
+
 //import com.google.androidgamesdk.gametextinput.Settings
 
 @OptIn(ExperimentalMaterial3Api::class)

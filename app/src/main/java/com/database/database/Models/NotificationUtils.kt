@@ -1,4 +1,4 @@
-package com.example.studention
+package com.database.database.Models
 
 
 import android.Manifest
@@ -6,11 +6,10 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-
+import com.example.studention.views.MainActivity
 
 
 fun showDailyReminder(context: Context) {

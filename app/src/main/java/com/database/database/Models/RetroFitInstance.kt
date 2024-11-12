@@ -1,4 +1,4 @@
-package com.example.studention
+package com.database.database.Models
 
 // api/RetrofitInstance.kt
 import retrofit2.Retrofit

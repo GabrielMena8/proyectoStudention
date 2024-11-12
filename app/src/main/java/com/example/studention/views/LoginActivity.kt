@@ -1,4 +1,4 @@
-package com.example.studention
+package com.example.studention.views
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -15,6 +15,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.studention.R
+import com.example.studention.ValidarUser
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

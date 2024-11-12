@@ -1,4 +1,4 @@
-package com.example.studention
+package com.example.studention.views
 
 import android.util.Log
 import androidx.compose.foundation.background
@@ -17,7 +17,7 @@ import androidx.navigation.NavHostController
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.text.style.TextAlign
-import streakDays
+import com.example.studention.ValidarUser
 
 
 @Composable

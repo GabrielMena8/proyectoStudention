@@ -1,4 +1,4 @@
-package com.example.studention
+package com.example.studention.views
 
 import android.util.Log
 import androidx.compose.runtime.*
@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.database.database.UsersUtil
+import com.example.studention.ValidarUser
 import com.google.firebase.firestore.FirebaseFirestore
 
 
