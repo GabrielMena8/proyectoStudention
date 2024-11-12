@@ -202,7 +202,7 @@ fun MyApp() {
     } else {
         NavHost(
             navController = navController,
-            startDestination = if (carnet != null) "main" else "welcome"
+            startDestination = "welcome"
         ) {
             composable("welcome") {
                 WelcomeScreen(
