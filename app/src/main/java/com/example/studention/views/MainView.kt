@@ -44,9 +44,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.font.FontWeight
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
-
 fun MainScreen(navController: NavHostController) {
     var selectedTab by remember { mutableStateOf(0) }
 
@@ -81,6 +81,29 @@ fun MainScreen(navController: NavHostController) {
                 //0 -> HomeTabContent()
                 2 -> ProfileTabContent()
                 3 -> StreaksTabContent(navController)
+            }
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.Bottom,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Spacer(modifier = Modifier.height(16.dp))
+                Button(
+                    onClick = {
+                        FirebaseAuth.getInstance().signOut()
+                        navController.navigate("welcome") {
+                            popUpTo("main") { inclusive = true }
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+                ) {
+                    Text("Cerrar sesión", color = Color.White)
+                }
             }
         }
     }

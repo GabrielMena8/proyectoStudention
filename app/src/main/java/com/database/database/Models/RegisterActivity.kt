@@ -233,6 +233,18 @@ fun RegisterScreen(navController: NavController) {
             ) {
                 Text("Register", color = Color.White)
             }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                onClick = { navController.navigate("login") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)
+            ) {
+                Text("¿Ya tienes una cuenta?", color = Color.White)
+            }
         }
     }
 }

@@ -149,6 +149,18 @@ fun LoginScreen(navController: NavController) {
             ) {
                 Text("Iniciar sesión", color = Color.White)
             }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                onClick = { navController.navigate("register") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)
+            ) {
+                Text("¿No te has registrado?", color = Color.White)
+            }
         }
     }
 }
