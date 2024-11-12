@@ -4,8 +4,19 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 import firebase_admin
 from firebase_admin import credentials, firestore
+import os
+import json
+current_dir = os.path.dirname(__file__)
 
-cred = credentials.Certificate("studention-11f13-firebase-adminsdk-4fnmw-16073fda31.json")
+# Construye la ruta relativa al archivo JSON de credenciales
+json_path = os.path.join(current_dir, '../appi/studention-11f13-firebase-adminsdk-4fnmw-16073fda31.json')
+
+# Cargar las credenciales desde el archivo JSON
+with open(json_path) as f:
+    cred_dict = json.load(f)
+
+
+cred = credentials.Certificate(cred_dict)
 firebase_admin.initialize_app(cred)
 
 db = firestore.client()
