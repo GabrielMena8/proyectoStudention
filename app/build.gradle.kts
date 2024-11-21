@@ -68,6 +68,8 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.games.text.input)
     implementation(libs.places)
+    implementation(libs.firebase.database.ktx)
+    implementation(libs.androidx.ui.test.android)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

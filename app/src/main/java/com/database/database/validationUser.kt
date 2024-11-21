@@ -178,6 +178,7 @@ class ValidarUser(context: Context) {
                 onFailure(e)
             }
     }
+
     val reviewsRef = db.collection("review")
 
     fun cargarReview(review: Review, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {

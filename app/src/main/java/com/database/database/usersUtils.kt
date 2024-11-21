@@ -2,6 +2,11 @@ package com.database.database
 
 import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.firestore.FieldValue
 
 class UsersUtil {
     private val db = FirebaseFirestore.getInstance() // Initialize Firestore instance
@@ -159,6 +164,46 @@ class UsersUtil {
                 onFailure(exception) // Call onFailure with the exception
             }
     }
+
+    fun obtenerClasesUsuario(
+        carnet: String,
+        onSuccess: (List<Map<String, Any>>) -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        db.collection("estudiantes").document(carnet).get()
+            .addOnSuccessListener { document ->
+                val classIds = document.get("clases") as? List<String> ?: emptyList()
+                val classDetails = mutableListOf<Map<String, Any>>()
+                classIds.forEach { classId ->
+                    db.collection("clase").document(classId).get()
+                        .addOnSuccessListener { classDoc ->
+                            classDoc.data?.let { classDetails.add(it) }
+                            if (classDetails.size == classIds.size) {
+                                onSuccess(classDetails)
+                            }
+                        }
+                        .addOnFailureListener { exception ->
+                            onFailure(exception)
+                        }
+                }
+            }
+            .addOnFailureListener { exception ->
+                onFailure(exception)
+            }
+    }
+
+    fun añadirClaseUsuario(
+        carnet: String,
+        nuevaClaseId: String,
+        onSuccess: () -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        val studentRef = db.collection("estudiantes").document(carnet)
+        studentRef.update("clases", FieldValue.arrayUnion(nuevaClaseId))
+            .addOnSuccessListener { onSuccess() }
+            .addOnFailureListener { exception -> onFailure(exception) }
+    }
 }
+
 
 

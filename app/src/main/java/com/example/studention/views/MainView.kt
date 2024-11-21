@@ -46,21 +46,62 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.font.FontWeight
 import com.google.firebase.auth.FirebaseAuth
 
+import com.google.firebase.firestore.FirebaseFirestore
+import androidx.compose.runtime.LaunchedEffect
+
 @Composable
 fun MainScreen(navController: NavHostController) {
+    var carnet by remember { mutableStateOf("") }
+    var isLoading by remember { mutableStateOf(true) } // Para mostrar un indicador de carga mientras se obtiene el carnet
+
+
+    // Recuperar el carnet de Firebase
+    LaunchedEffect(Unit) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+        if (userId != null) {
+            FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(userId)
+                .get()
+                .addOnSuccessListener { document ->
+                    carnet = document.getString("carnet") ?: "Desconocido"
+                    isLoading = false
+                }
+                .addOnFailureListener {
+                    carnet = "Error"
+                    isLoading = false
+                }
+        } else {
+            carnet = "No autenticado"
+            isLoading = false
+        }
+    }
+
+    if (isLoading) {
+        // Mostrar un indicador de carga mientras se obtiene el carnet
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
+    } else {
+        // Mostrar la interfaz principal una vez que se obtiene el carnet
+        MainScreenContent(navController = navController, carnet = carnet)
+    }
+}
+
+@Composable
+fun MainScreenContent(navController: NavHostController, carnet: String) {
     var selectedTab by remember { mutableStateOf(0) }
 
-    // Definimos los colores para cada pestaña
     val backgroundColor = when (selectedTab) {
-        0 -> Color(0xFFE3F2FD) // Azul claro para Home
-        1 -> Color(0xFFFCE4EC) // Rosa para Classes
-        2 -> Color(0xFFE8F5E9) // Verde claro para Profile
-        3 -> Color(0xFFFFF3E0) // Naranja claro para Streaks
+        0 -> Color(0xFFE3F2FD)
+        1 -> Color(0xFFFCE4EC)
+        2 -> Color(0xFFE8F5E9)
+        3 -> Color(0xFFFFF3E0)
         else -> Color.White
     }
 
     Scaffold(
-        containerColor = backgroundColor, // Cambiar el fondo dinámicamente
+        containerColor = backgroundColor,
         bottomBar = {
             BottomNavigationBar(
                 selectedTabIndex = selectedTab,
@@ -78,36 +119,14 @@ fun MainScreen(navController: NavHostController) {
             contentAlignment = Alignment.Center
         ) {
             when (selectedTab) {
-                //0 -> HomeTabContent()
-                2 -> ProfileTabContent()
+                0 -> HomeTabContent(navController)
+                2 -> ProfileTabContent(carnet)
                 3 -> StreaksTabContent(navController)
-            }
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.Bottom,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Spacer(modifier = Modifier.height(16.dp))
-                Button(
-                    onClick = {
-                        FirebaseAuth.getInstance().signOut()
-                        navController.navigate("welcome") {
-                            popUpTo("main") { inclusive = true }
-                        }
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 16.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
-                ) {
-                    Text("Cerrar sesión", color = Color.White)
-                }
             }
         }
     }
 }
+
 
 @Composable
 fun ClassCard(
@@ -257,64 +276,38 @@ fun PasswordDialog(onDismiss: () -> Unit, onPasswordCorrect: () -> Unit) {
 
 
 @Composable
-    fun HomeTabContent() {
-
-        /*
-        val scope = rememberCoroutineScope()
-        var code by remember { mutableStateOf("") } // Código recibido de la API
-        var showPopup by remember { mutableStateOf(false) } // Estado del popup
-        val context = LocalContext.current
-
-        val classes = listOf(
-            ClassData("Matemáticas", "Clase de álgebra", "10:00 AM - 11:00 AM"),
-            ClassData("Historia", "Historia Universal", "12:00 PM - 1:00 PM"),
-            ClassData("Ciencias", "Laboratorio de química", "2:00 PM - 3:00 PM"),
-            ClassData("Inglés", "Clase de gramática", "4:00 PM - 5:00 PM")
+fun HomeTabContent(navController: NavHostController) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "Bienvenido a la pestaña de inicio",
+            style = MaterialTheme.typography.headlineMedium
         )
 
-        LazyVerticalGrid(
-            columns = GridCells.Adaptive(minSize = 150.dp),
-            modifier = Modifier.padding(8.dp)
-        ) {
-            items(classes) { classItem ->
-                ClassCard(
-                    title = classItem.title,
-                    description = classItem.description,
-                    time = classItem.time,
-                    onClick = { /* Acción al hacer clic en una clase */ }
-                )
-            }
+        Spacer(modifier = Modifier.height(16.dp))
 
-
-
-
-        }
-
-        Button(onClick = {
-            scope.launch {
-                try {
-                    val response = RetrofitInstance.api.getVotes()
-                    response.forEach {
-                        Log.d("API_RESPONSE", "Datos: ${it.id} - ${it.code}")
-                        correctPassword = it.code.toString()
+        Button(
+            onClick = {
+                // Acción para cerrar sesión
+                FirebaseAuth.getInstance().signOut()
+                navController.navigate("welcome") {
+                    popUpTo(navController.graph.startDestinationId) {
+                        inclusive = true
                     }
-                    code = correctPassword// Asigna el valor del código
-                    showPopup = true // Muestra el popup al recibir los datos
-                } catch (e: Exception) {
-                    Log.e("API_ERROR", "Error al obtener los datos: ${e.message}")
                 }
-            }
-        }) {
-            Text("Generate Request")
+            },
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(8.dp)
+        ) {
+            Text("Cerrar Sesión")
         }
-
-        // Mostrar el popup si el estado es verdadero
-        if (showPopup) {
-            popUpCode(code) { showPopup = false }
-        }
-        */
-
     }
+}
 
 
 

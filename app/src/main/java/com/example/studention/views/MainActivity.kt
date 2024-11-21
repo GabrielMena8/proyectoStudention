@@ -232,6 +232,15 @@ fun MyApp() {
             composable("negative") {
                 NegativeScreen(navController, carnet!!, validarUser)
             }
+            composable("voteSelection") {
+                VoteSelectionScreen(navController)
+            }
+            composable("colorVerification/{voteId}") { backStackEntry ->
+                ColorVerificationScreen(navController, backStackEntry.arguments?.getString("voteId") ?: "")
+            }
+            composable("feedback") {
+                FeedbackScreen(navController)
+            }
         }
     }
 }

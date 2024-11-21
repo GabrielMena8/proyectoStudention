@@ -18,6 +18,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.text.style.TextAlign
 import com.example.studention.ValidarUser
+import com.google.firebase.firestore.FirebaseFirestore
+import java.util.Date
+import java.util.Timer
+import java.util.TimerTask
 
 
 @Composable
@@ -63,6 +67,140 @@ fun ButtonScreen(navController: NavHostController) {
                 },
                 modifier = Modifier.padding(8.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF44336)) // Red color
+            ) {
+                Text("Negative Review", color = Color.White)
+            }
+        }
+    }
+}
+@Composable
+fun VoteSelectionScreen(navController: NavHostController) {
+    val firestore = FirebaseFirestore.getInstance()
+    var voteItems by remember { mutableStateOf<List<VoteItem>>(emptyList()) }
+
+    LaunchedEffect(Unit) {
+        firestore.collection("vote").get()
+            .addOnSuccessListener { result ->
+                voteItems = result.map { document ->
+                    VoteItem(
+                        id = document.id,
+                        boton1 = document.getLong("boton1")?.toInt() ?: 0,
+                        boton2 = document.getLong("boton2")?.toInt() ?: 0,
+                        color = document.getString("color") ?: "",
+                        createdAt = document.getTimestamp("created_at")?.toDate() ?: Date()
+                    )
+                }
+            }
+    }
+
+    Column(
+        modifier = Modifier.fillMaxSize().padding(16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        voteItems.forEach { item ->
+            Button(
+                onClick = { navController.navigate("colorVerification/${item.id}") },
+                modifier = Modifier.padding(8.dp)
+            ) {
+                Text("Vote Item: ${item.id}")
+            }
+        }
+    }
+}
+
+data class VoteItem(
+    val id: String,
+    val boton1: Int,
+    val boton2: Int,
+    val color: String,
+    val createdAt: Date
+)
+@Composable
+fun ColorVerificationScreen(navController: NavHostController, voteId: String) {
+    val firestore = FirebaseFirestore.getInstance()
+    var voteItem by remember { mutableStateOf<VoteItem?>(null) }
+    var selectedColor by remember { mutableStateOf("") }
+    var timeLeft by remember { mutableStateOf(30) }
+    val timer = remember { Timer() }
+
+    LaunchedEffect(voteId) {
+        firestore.collection("vote").document(voteId).get()
+            .addOnSuccessListener { document ->
+                voteItem = VoteItem(
+                    id = document.id,
+                    boton1 = document.getLong("boton1")?.toInt() ?: 0,
+                    boton2 = document.getLong("boton2")?.toInt() ?: 0,
+                    color = document.getString("color") ?: "",
+                    createdAt = document.getTimestamp("created_at")?.toDate() ?: Date()
+                )
+            }
+    }
+
+    LaunchedEffect(Unit) {
+        timer.scheduleAtFixedRate(object : TimerTask() {
+            override fun run() {
+                if (timeLeft > 0) {
+                    timeLeft--
+                } else {
+                    timer.cancel()
+                }
+            }
+        }, 1000, 1000)
+    }
+
+    if (timeLeft == 0) {
+        if (selectedColor == voteItem?.color) {
+            navController.navigate("feedback")
+        } else {
+            // Handle incorrect color selection
+        }
+    }
+
+    Column(
+        modifier = Modifier.fillMaxSize().padding(16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text("Select the correct color for ${voteItem?.id}")
+        Row {
+            Button(onClick = { selectedColor = "green" }) {
+                Text("Green")
+            }
+            Button(onClick = { selectedColor = "red" }) {
+                Text("Red")
+            }
+            Button(onClick = { selectedColor = "blue" }) {
+                Text("Blue")
+            }
+        }
+        Text("Time left: $timeLeft seconds")
+    }
+}
+
+@Composable
+fun FeedbackScreen(navController: NavHostController) {
+    Column(
+        modifier = Modifier.fillMaxSize().padding(16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text("How was your class today?", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            Button(
+                onClick = { navController.navigate("positive") },
+                modifier = Modifier.padding(8.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
+            ) {
+                Text("Positive Review", color = Color.White)
+            }
+            Button(
+                onClick = { navController.navigate("negative") },
+                modifier = Modifier.padding(8.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF44336))
             ) {
                 Text("Negative Review", color = Color.White)
             }
