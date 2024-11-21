@@ -26,6 +26,7 @@ appcompat = "1.7.0"
 
 gamesActivity = "3.0.5"
 gamesTextInput = "3.0.4"
+places = "4.1.0"
 
 
 [libraries]
@@ -62,6 +63,7 @@ androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version
 
 androidx-games-activity = { group = "androidx.games", name = "games-activity", version.ref = "gamesActivity" }
 androidx-games-text-input = { group = "androidx.games", name = "games-text-input", version.ref = "gamesTextInput" }
+places = { group = "com.google.android.libraries.places", name = "places", version.ref = "places" }
 
 
 [plugins]

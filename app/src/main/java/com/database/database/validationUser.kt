@@ -2,6 +2,7 @@ package com.example.studention
 import android.content.Context
 import android.util.Log
 import com.example.studention.views.RankingItemData
+import com.google.android.libraries.places.api.model.Review
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -177,6 +178,62 @@ class ValidarUser(context: Context) {
                 onFailure(e)
             }
     }
+    val reviewsRef = db.collection("review")
+
+    fun cargarReview(review: Review, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
+        reviewsRef.add(review)
+            .addOnSuccessListener {
+                println("Review añadida con éxito, ID: ${it.id}")
+                onSuccess()
+            }
+            .addOnFailureListener { e ->
+                println("Error al guardar la review: ${e.message}")
+                onFailure(e)
+            }
+    }
+
+    //val newReview = Review(
+    //    userId = "Id de la persona que hace la review",
+    //    Id = "Id de la clase",
+    //    review = La review escrita por el estudiante,
+    //
+    //)
+    // subirReview(newReview,
+    //    onSuccess = { println("Review guardada exitosamente") },
+    //    onFailure = { error -> println("Error: ${error.message}") }
+    //) esta seria la forma de implementar el endpoint de las review escritas por los usuarios
+
+    val ClaseRef = db.collection("clase")
+
+    fun añadirClase(
+        datos: Map<String, Any>,
+        onSuccess: () -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        ClaseRef.add(datos)
+            .addOnSuccessListener { documentReference ->
+                println("Clase añadida con ID: ${documentReference.id}")
+                onSuccess()
+            }
+            .addOnFailureListener { exception ->
+                println("Error al guardar clase: ${exception.message}")
+                onFailure(exception)
+            }
+    }
+
+    //val nuevaClase = mapOf(
+    //    "classId" to "el codigo de la clase que queremos guardar el horario",
+    //    "timestamp" to System.currentTimeMillis(),
+    //    "rating" to 4.5
+    //)
+    //
+    //añadirClase(
+    //    nuevaClase,
+    //    onSuccess = { println("Clase guardada exitosamente") },
+    //    onFailure = { error -> println("Error: ${error.message}") }
+    //)
+
+
 }
 
 data class User(
