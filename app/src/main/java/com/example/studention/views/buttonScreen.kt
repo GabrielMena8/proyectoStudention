@@ -222,7 +222,7 @@ fun NegativeScreen(navController: NavHostController, carnet: String, validarUser
                     validarUser.modificarRacha(carnet,
                         onSuccess = {
                             navController.navigate("streaks") {
-                                popUpTo("buttonScreen") { inclusive = true } // Avoid returning to ButtonScreen
+                                popUpTo("buttonScreen") { inclusive = true }
                             }
                         },
                         onFailure = { e ->

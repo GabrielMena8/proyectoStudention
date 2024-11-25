@@ -90,7 +90,9 @@ fun ProfileTabContent() {
             if (loading) {
                 CircularProgressIndicator() // Show a loading indicator
             } else {
-                LazyColumn {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize()
+                ) {
                     items(classes) { clase ->
                         val profesor = profesores.find { prof ->
                             (prof["clases"] as? List<*>)?.contains(clase["id"]) == true
@@ -106,13 +108,6 @@ fun ProfileTabContent() {
                                 Text(text = "Materia: ${clase["materia"]}", style = MaterialTheme.typography.bodyLarge)
                                 Text(text = "Profesor: $profesorNombre", style = MaterialTheme.typography.bodyMedium)
                                 Spacer(modifier = Modifier.height(8.dp))
-                               /* Button(
-                                    onClick = {
-                                        // Handle button click
-                                    }
-                                ) {
-                                    Text("Ver detalles")
-                                }*/
                             }
                         }
                     }
