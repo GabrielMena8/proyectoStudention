@@ -19,8 +19,17 @@ import com.example.studention.R
 fun MainScreen(navController: NavHostController, carnet: String) {
     var selectedTab by remember { mutableStateOf(1) }
 
+    // Define colors for each tab
+    val backgroundColor = when (selectedTab) {
+        1 -> Color(0xFFFCE4EC) // Pink for Classes
+        2 -> Color(0xFFE8F5E9) // Light green for Profile
+        3 -> Color(0xFFFFF3E0) // Light orange for Streaks
+        else -> Color.White
+    }
+
     Scaffold(
-        bottomBar = {
+        containerColor = backgroundColor, // Change background dynamically
+        /*bottomBar = {
             BottomNavigationBar(
                 selectedTabIndex = selectedTab,
                 onTabSelected = { index ->
@@ -32,7 +41,7 @@ fun MainScreen(navController: NavHostController, carnet: String) {
                     }
                 }
             )
-        }
+        }*/
     ) { innerPadding ->
         Box(
             modifier = Modifier
