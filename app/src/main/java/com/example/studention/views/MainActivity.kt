@@ -225,14 +225,19 @@ fun MyApp() {
             composable("classes") {
                 ClassesTabContent(navController)
             }
-            composable("buttonScreen") {
-                ButtonScreen(navController)
+            composable("buttonScreen/{classId}") { backStackEntry ->
+                val classId = backStackEntry.arguments?.getString("classId") ?: ""
+                ButtonScreen(navController, classId)
             }
-            composable("positive") {
-                PositiveScreen(navController, carnet!!, validarUser)
+            composable("positive/{classId}/{carnet}") { backStackEntry ->
+                val classId = backStackEntry.arguments?.getString("classId") ?: ""
+                val carnet = backStackEntry.arguments?.getString("carnet") ?: ""
+                PositiveScreen(navController, classId, carnet, validarUser)
             }
-            composable("negative") {
-                NegativeScreen(navController, carnet!!, validarUser)
+            composable("negative/{classId}/{carnet}") { backStackEntry ->
+                val classId = backStackEntry.arguments?.getString("classId") ?: ""
+                val carnet = backStackEntry.arguments?.getString("carnet") ?: ""
+                NegativeScreen(navController, classId, carnet, validarUser)
             }
             composable("verification/{classId}") { backStackEntry ->
                 val classId = backStackEntry.arguments?.getString("classId") ?: ""

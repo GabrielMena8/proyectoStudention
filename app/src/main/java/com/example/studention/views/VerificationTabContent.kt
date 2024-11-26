@@ -13,6 +13,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -22,6 +24,8 @@ fun VerificationTabContent(navController: NavHostController, classId: String) {
     var options by remember { mutableStateOf<List<Color>>(emptyList()) }
     var resultMessage by remember { mutableStateOf("") }
     var classDetails by remember { mutableStateOf<Map<String, Any>?>(null) }
+    var timeLeft by remember { mutableStateOf(30) }
+    val scope = rememberCoroutineScope()
 
     // Fetch the color and class details associated with the classId
     LaunchedEffect(classId) {
@@ -37,6 +41,17 @@ fun VerificationTabContent(navController: NavHostController, classId: String) {
             classDetails = document.data
         }.addOnFailureListener {
             resultMessage = "Failed to load class details. Please try again."
+        }
+
+        // Start the timer
+        scope.launch {
+            while (timeLeft > 0) {
+                delay(1000L)
+                timeLeft--
+            }
+            if (timeLeft == 0) {
+                navController.navigate("classes")
+            }
         }
     }
 
@@ -94,6 +109,13 @@ fun VerificationTabContent(navController: NavHostController, classId: String) {
                     modifier = Modifier.padding(vertical = 16.dp)
                 )
 
+                Text(
+                    text = "Tiempo restante: $timeLeft segundos",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = Color.Red,
+                    modifier = Modifier.padding(vertical = 16.dp)
+                )
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
@@ -105,10 +127,10 @@ fun VerificationTabContent(navController: NavHostController, classId: String) {
                                 .background(color, shape = CircleShape)
                                 .border(2.dp, Color.Black, shape = CircleShape)
                                 .clickable {
-                                    resultMessage = if (color == correctColor) {
-                                        "¡Correcto! Asististe a la clase."
+                                    if (color == correctColor) {
+                                        navController.navigate("buttonScreen/$classId")
                                     } else {
-                                        "Incorrecto. Puede que no hayas asistido a la clase."
+                                        navController.navigate("classes")
                                     }
                                 }
                         )

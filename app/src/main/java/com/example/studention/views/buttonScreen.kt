@@ -18,60 +18,87 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.text.style.TextAlign
 import com.example.studention.ValidarUser
-
+import androidx.compose.ui.platform.LocalContext
 
 @Composable
-fun ButtonScreen(navController: NavHostController) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = "How was your class today?",
-            modifier = Modifier.padding(bottom = 32.dp),
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.Black
-        )
+fun ButtonScreen(navController: NavHostController, classId: String) {
+    val context = LocalContext.current
+    val validarUser = remember { ValidarUser(context) }
+    var carnet by remember { mutableStateOf<String?>(null) }
+    var isLoading by remember { mutableStateOf(true) }
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            // Positive review button
-            Button(
-                onClick = {
-                    navController.navigate("positive") {
-                        popUpTo("buttonScreen") { inclusive = true } // Avoid returning to ButtonScreen
-                    }
-                },
-                modifier = Modifier.padding(8.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)) // Green color
-            ) {
-                Text("Positive Review", color = Color.White)
+    LaunchedEffect(Unit) {
+        validarUser.obtenerCarnetUsuarioActual(
+            onSuccess = { carnetValue ->
+                carnet = carnetValue
+                isLoading = false
+            },
+            onFailure = { e ->
+                Log.w("TAG", "Error al obtener el carnet", e)
+                isLoading = false
             }
+        )
+    }
 
-            // Negative review button
-            Button(
-                onClick = {
-                    navController.navigate("negative") {
-                        popUpTo("buttonScreen") { inclusive = true } // Avoid returning to ButtonScreen
-                    }
-                },
-                modifier = Modifier.padding(8.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF44336)) // Red color
+    if (isLoading) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
+        }
+    } else {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "How was your class today?",
+                modifier = Modifier.padding(bottom = 32.dp),
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                Text("Negative Review", color = Color.White)
+                // Positive review button
+                Button(
+                    onClick = {
+                        navController.navigate("positive/$classId/$carnet") {
+                            popUpTo("buttonScreen") { inclusive = true } // Avoid returning to ButtonScreen
+                        }
+                    },
+                    modifier = Modifier.padding(8.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)) // Green color
+                ) {
+                    Text("Positive Review", color = Color.White)
+                }
+
+                // Negative review button
+                Button(
+                    onClick = {
+                        navController.navigate("negative/$classId/$carnet") {
+                            popUpTo("buttonScreen") { inclusive = true } // Avoid returning to ButtonScreen
+                        }
+                    },
+                    modifier = Modifier.padding(8.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF44336)) // Red color
+                ) {
+                    Text("Negative Review", color = Color.White)
+                }
             }
         }
     }
 }
 
 @Composable
-fun PositiveScreen(navController: NavHostController, carnet: String, validarUser: ValidarUser) {
+fun PositiveScreen(navController: NavHostController, classId: String, carnet: String, validarUser: ValidarUser) {
     // Soft green background
     Box(
         modifier = Modifier
@@ -135,16 +162,8 @@ fun PositiveScreen(navController: NavHostController, carnet: String, validarUser
             // Button to submit the review
             Button(
                 onClick = {
-                    validarUser.modificarRacha(carnet,
-                        onSuccess = {
-                            navController.navigate("streaks") {
-                                popUpTo("buttonScreen") { inclusive = true } // Avoid returning to ButtonScreen
-                            }
-                        },
-                        onFailure = { e ->
-                            Log.w("TAG", "Error al actualizar la racha", e)
-                        }
-                    )
+                    // Handle review submission
+                    navController.navigate("main")
                 },
                 modifier = Modifier.padding(top = 16.dp)
             ) {
@@ -155,7 +174,7 @@ fun PositiveScreen(navController: NavHostController, carnet: String, validarUser
 }
 
 @Composable
-fun NegativeScreen(navController: NavHostController, carnet: String, validarUser: ValidarUser) {
+fun NegativeScreen(navController: NavHostController, classId: String, carnet: String, validarUser: ValidarUser) {
     // Soft red background
     Box(
         modifier = Modifier
@@ -181,7 +200,7 @@ fun NegativeScreen(navController: NavHostController, carnet: String, validarUser
 
             // Apology message
             Text(
-                text = "Thank you for your feedback, we're sorry your experience wasn't good!",
+                text = "We are sorry to hear that you had a negative experience.",
                 color = Color.Red,
                 fontSize = 24.sp,
                 modifier = Modifier.padding(bottom = 32.dp)
@@ -219,16 +238,8 @@ fun NegativeScreen(navController: NavHostController, carnet: String, validarUser
             // Button to submit the review
             Button(
                 onClick = {
-                    validarUser.modificarRacha(carnet,
-                        onSuccess = {
-                            navController.navigate("streaks") {
-                                popUpTo("buttonScreen") { inclusive = true }
-                            }
-                        },
-                        onFailure = { e ->
-                            Log.w("TAG", "Error al actualizar la racha", e)
-                        }
-                    )
+                    // Handle review submission
+                    navController.navigate("main")
                 },
                 modifier = Modifier.padding(top = 16.dp)
             ) {
