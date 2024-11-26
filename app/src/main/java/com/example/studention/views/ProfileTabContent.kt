@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import com.database.database.UsersUtil
 import com.example.studention.R
 
@@ -21,13 +22,14 @@ import com.example.studention.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileTabContent() {
+fun ProfileTabContent(navController: NavHostController, carnet: String) {
     val usersUtil = UsersUtil()
     var classes by remember { mutableStateOf<List<Map<String, Any>>>(emptyList()) }
     var loading by remember { mutableStateOf(true) }
     var showDialog by remember { mutableStateOf(false) }
     var selectedClass by remember { mutableStateOf<Map<String, Any>?>(null) }
     var profesores by remember { mutableStateOf<List<Map<String, Any>>>(emptyList()) }
+    var selectedTab by remember { mutableStateOf(2) }
 
     // Fetch classes and professors when the composable is first composed
     LaunchedEffect(Unit) {
@@ -67,6 +69,19 @@ fun ProfileTabContent() {
             FloatingActionButton(onClick = { showDialog = true }) {
                 Icon(imageVector = Icons.Default.Add, contentDescription = "Add")
             }
+        },
+        bottomBar = {
+            BottomNavigationBar(
+                selectedTabIndex = selectedTab,
+                onTabSelected = { index ->
+                    selectedTab = index
+                    when (index) {
+                        1 -> navController.navigate("classes/$carnet")
+                        2 -> navController.navigate("profile/$carnet")
+                        3 -> navController.navigate("streaks/$carnet")
+                    }
+                }
+            )
         }
     ) { paddingValues ->
         Column(
@@ -121,7 +136,6 @@ fun ProfileTabContent() {
             }
         }
     }
-
 
     // Show dialog when button is clicked
     if (showDialog) {

@@ -19,9 +19,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.text.style.TextAlign
 import com.example.studention.ValidarUser
 import androidx.compose.ui.platform.LocalContext
+import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.FirebaseFirestore
 
 @Composable
-fun ButtonScreen(navController: NavHostController, classId: String) {
+fun ButtonScreen(navController: NavHostController, classId: String, carnet: String) {
     val context = LocalContext.current
     val validarUser = remember { ValidarUser(context) }
     var carnet by remember { mutableStateOf<String?>(null) }
@@ -56,7 +58,7 @@ fun ButtonScreen(navController: NavHostController, classId: String) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "How was your class today?",
+                text = "¿Cómo fue tú clase de hoy?",
                 modifier = Modifier.padding(bottom = 32.dp),
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
@@ -77,7 +79,7 @@ fun ButtonScreen(navController: NavHostController, classId: String) {
                     modifier = Modifier.padding(8.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)) // Green color
                 ) {
-                    Text("Positive Review", color = Color.White)
+                    Text("Review Positive", color = Color.White)
                 }
 
                 // Negative review button
@@ -90,7 +92,7 @@ fun ButtonScreen(navController: NavHostController, classId: String) {
                     modifier = Modifier.padding(8.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF44336)) // Red color
                 ) {
-                    Text("Negative Review", color = Color.White)
+                    Text("Review Negativa", color = Color.White)
                 }
             }
         }
@@ -99,152 +101,146 @@ fun ButtonScreen(navController: NavHostController, classId: String) {
 
 @Composable
 fun PositiveScreen(navController: NavHostController, classId: String, carnet: String, validarUser: ValidarUser) {
-    // Soft green background
+    val db = FirebaseFirestore.getInstance()
+    var comentario by remember { mutableStateOf("") }
+    var mostrarDialogo by remember { mutableStateOf(false) }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFE0F7E0)), // Soft green color
+            .background(Color(0xFFE0F7E0)), // Color verde suave
         contentAlignment = Alignment.Center
     ) {
         Column(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Title
             Text(
-                text = "Positive Review",
-                color = Color.Black,
-                fontSize = 32.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
-
-            // Thank you message
-            Text(
-                text = "Thank you for your positive feedback!",
-                color = Color.Green,
-                fontSize = 24.sp,
-                modifier = Modifier.padding(bottom = 32.dp)
-            )
-
-            // Optional feedback block
-            Text(
-                text = "Do you have any additional comments?",
+                text = "¿Tienes algún comentario adicional?",
                 fontSize = 18.sp,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
             Text(
-                text = "Comments are optional. You can skip this.",
+                text = "Los comentarios son opcionales. Puedes omitir esto.",
                 fontSize = 14.sp,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
-
-            // Text field for additional comments
-            var comment by remember { mutableStateOf("") }
             TextField(
-                value = comment,
-                onValueChange = { comment = it },
-                placeholder = { Text("Write your comment here...") },
-                modifier = Modifier.fillMaxWidth().height(100.dp),
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = Color.White,
-                    unfocusedContainerColor = Color.White,
-                    focusedIndicatorColor = Color.Green,
-                    unfocusedIndicatorColor = Color.LightGray
-                )
+                value = comentario,
+                onValueChange = { comentario = it },
+                label = { Text("Escribe tu comentario aquí...") },
+                modifier = Modifier.fillMaxWidth()
             )
-
-            // Button to submit the review
             Button(
                 onClick = {
-                    // Handle review submission
-                    navController.navigate("main")
+                    db.collection("voto").document(classId).update(
+                        "reviewP", FieldValue.arrayUnion(comentario),
+                        "asistencia", FieldValue.arrayUnion(carnet)
+                    ).addOnSuccessListener {
+                        mostrarDialogo = true
+                    }.addOnFailureListener {
+                        // Manejar el error
+                    }
                 },
-                modifier = Modifier.padding(top = 16.dp)
+                modifier = Modifier.padding(top = 16.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)) // Color verde
             ) {
-                Text("Submit Review")
+                Text("Enviar", color = Color.White)
             }
         }
+    }
+
+    if (mostrarDialogo) {
+        AlertDialog(
+            onDismissRequest = { mostrarDialogo = false },
+            title = { Text("Éxito") },
+            text = { Text("Tu reseña ha sido enviada exitosamente.") },
+            confirmButton = {
+                Button(onClick = {
+                    mostrarDialogo = false
+                    navController.navigate("streaks")
+                }) {
+                    Text("OK")
+                }
+            }
+        )
     }
 }
 
 @Composable
 fun NegativeScreen(navController: NavHostController, classId: String, carnet: String, validarUser: ValidarUser) {
-    // Soft red background
+    val db = FirebaseFirestore.getInstance()
+    var comentario by remember { mutableStateOf("") }
+    var mostrarDialogo by remember { mutableStateOf(false) }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFFFE0E0)), // Soft red color
+            .background(Color(0xFFFFE0E0)), // Color rojo suave
         contentAlignment = Alignment.Center
     ) {
         Column(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Title
             Text(
-                text = "Negative Review",
-                color = Color.Black,
-                fontSize = 32.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
-
-            // Apology message
-            Text(
-                text = "We are sorry to hear that you had a negative experience.",
-                color = Color.Red,
-                fontSize = 24.sp,
-                modifier = Modifier.padding(bottom = 32.dp)
-            )
-
-            // Optional feedback block
-            Text(
-                text = "Do you have any additional comments?",
+                text = "¿Tienes algún comentario adicional?",
                 fontSize = 18.sp,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
             Text(
-                text = "Comments are optional. You can skip this.",
+                text = "Los comentarios son opcionales. Puedes omitir esto.",
                 fontSize = 14.sp,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
-
-            // Text field for additional comments
-            var comment by remember { mutableStateOf("") }
             TextField(
-                value = comment,
-                onValueChange = { comment = it },
-                placeholder = { Text("Write your comment here...") },
-                modifier = Modifier.fillMaxWidth().height(100.dp),
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = Color.White,
-                    unfocusedContainerColor = Color.White,
-                    focusedIndicatorColor = Color.Red,
-                    unfocusedIndicatorColor = Color.LightGray
-                )
+                value = comentario,
+                onValueChange = { comentario = it },
+                label = { Text("Escribe tu comentario aquí...") },
+                modifier = Modifier.fillMaxWidth()
             )
-
-            // Button to submit the review
             Button(
                 onClick = {
-                    // Handle review submission
-                    navController.navigate("main")
+                    db.collection("voto").document(classId).update(
+                        "reviewN", FieldValue.arrayUnion(comentario),
+                        "asistencia", FieldValue.arrayUnion(carnet)
+                    ).addOnSuccessListener {
+                        mostrarDialogo = true
+                    }.addOnFailureListener {
+                        // Manejar el error
+                    }
                 },
-                modifier = Modifier.padding(top = 16.dp)
+                modifier = Modifier.padding(top = 16.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF44336)) // Color rojo
             ) {
-                Text("Submit Review")
+                Text("Enviar", color = Color.White)
             }
         }
+    }
+
+    if (mostrarDialogo) {
+        AlertDialog(
+            onDismissRequest = { mostrarDialogo = false },
+            title = { Text("Éxito") },
+            text = { Text("Tu reseña ha sido enviada exitosamente.") },
+            confirmButton = {
+                Button(onClick = {
+                    mostrarDialogo = false
+                    navController.navigate("streaks")
+                }) {
+                    Text("OK")
+                }
+            }
+        )
     }
 }

@@ -38,7 +38,7 @@ fun LoginScreen(navController: NavHostController) {
             onSuccess = { user ->
                 if (user.password == password) {
                     Toast.makeText(context, "Inicio de sesión exitoso", Toast.LENGTH_SHORT).show()
-                    navController.navigate("main") {
+                    navController.navigate("classes/$carnet") {
                         popUpTo("login") { inclusive = true }
                     }
                 } else {
@@ -50,6 +50,7 @@ fun LoginScreen(navController: NavHostController) {
             }
         )
     }
+
 
     Box(
         modifier = Modifier

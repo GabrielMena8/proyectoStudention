@@ -16,7 +16,7 @@ import androidx.navigation.NavHostController
 import com.example.studention.R
 
 @Composable
-fun MainScreen(navController: NavHostController) {
+fun MainScreen(navController: NavHostController, carnet: String) {
     var selectedTab by remember { mutableStateOf(1) }
 
     // Define colors for each tab
@@ -34,6 +34,11 @@ fun MainScreen(navController: NavHostController) {
                 selectedTabIndex = selectedTab,
                 onTabSelected = { index ->
                     selectedTab = index
+                    when (index) {
+                        1 -> navController.navigate("classes/$carnet")
+                        2 -> navController.navigate("profile/$carnet")
+                        3 -> navController.navigate("streaks/$carnet")
+                    }
                 }
             )
         }
@@ -45,9 +50,9 @@ fun MainScreen(navController: NavHostController) {
             contentAlignment = Alignment.Center
         ) {
             when (selectedTab) {
-                1 -> ClassesTabContent(navController)
-                2 -> ProfileTabContent()
-                3 -> StreaksTabContent(navController)
+                1 -> ClassesTabContent(navController, carnet)
+                2 -> ProfileTabContent(navController, carnet)
+                3 -> StreaksTabContent(navController, carnet)
             }
         }
     }

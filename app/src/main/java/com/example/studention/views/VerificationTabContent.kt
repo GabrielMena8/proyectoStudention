@@ -18,7 +18,8 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun VerificationTabContent(navController: NavHostController, classId: String) {
+fun VerificationTabContent(navController: NavHostController, classId: String, carnet: String) {
+
     val db = FirebaseFirestore.getInstance()
     var correctColor by remember { mutableStateOf<Color?>(null) }
     var options by remember { mutableStateOf<List<Color>>(emptyList()) }
@@ -128,9 +129,9 @@ fun VerificationTabContent(navController: NavHostController, classId: String) {
                                 .border(2.dp, Color.Black, shape = CircleShape)
                                 .clickable {
                                     if (color == correctColor) {
-                                        navController.navigate("buttonScreen/$classId")
+                                        navController.navigate("buttonScreen/$classId/$carnet")
                                     } else {
-                                        navController.navigate("classes")
+                                        navController.navigate("classes/$carnet")
                                     }
                                 }
                         )

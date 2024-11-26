@@ -22,12 +22,12 @@ import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ClassesTabContent(navController: NavHostController) {
+fun ClassesTabContent(navController: NavHostController, carnet: String) {
     val usersUtil = UsersUtil()
     var classes by remember { mutableStateOf<List<Map<String, Any>>>(emptyList()) }
     var profesores by remember { mutableStateOf<List<Map<String, Any>>>(emptyList()) }
     var loading by remember { mutableStateOf(true) }
-    var selectedClassId by remember { mutableStateOf<String?>(null) }
+    var selectedTab by remember { mutableStateOf(1) }
 
     // Fetch classes and professors when the composable is first composed
     LaunchedEffect(Unit) {
@@ -52,7 +52,21 @@ fun ClassesTabContent(navController: NavHostController) {
         )
     }
 
-    Scaffold { paddingValues ->
+    Scaffold(
+        bottomBar = {
+            BottomNavigationBar(
+                selectedTabIndex = selectedTab,
+                onTabSelected = { index ->
+                    selectedTab = index
+                    when (index) {
+                        1 -> navController.navigate("classes/$carnet")
+                        2 -> navController.navigate("profile/$carnet")
+                        3 -> navController.navigate("streaks/$carnet")
+                    }
+                }
+            )
+        }
+    ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -96,9 +110,9 @@ fun ClassesTabContent(navController: NavHostController) {
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Button(
                                     onClick = {
-                                        selectedClassId = clase["id"] as? String
-                                        selectedClassId?.let { id ->
-                                            navController.navigate("verification/$id")
+                                        val classId = clase["id"] as? String
+                                        classId?.let { id ->
+                                            navController.navigate("verification/$id/$carnet")
                                         }
                                     },
                                     colors = ButtonDefaults.buttonColors(containerColor = Color.White)

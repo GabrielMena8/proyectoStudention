@@ -216,18 +216,27 @@ fun MyApp() {
             composable("register") {
                 RegisterScreen(navController)
             }
-            composable("main") {
-                MainScreen(navController)
+            composable("main/{carnet}") { backStackEntry ->
+                val carnet = backStackEntry.arguments?.getString("carnet") ?: ""
+                MainScreen(navController, carnet)
             }
-            composable("streaks") {
-                StreaksTabContent(navController)
+            composable("streaks/{carnet}") { backStackEntry ->
+                val carnet = backStackEntry.arguments?.getString("carnet") ?: ""
+                StreaksTabContent(navController, carnet)
             }
-            composable("classes") {
-                ClassesTabContent(navController)
+            composable("classes/{carnet}") { backStackEntry ->
+                val carnet = backStackEntry.arguments?.getString("carnet") ?: ""
+                ClassesTabContent(navController, carnet)
             }
-            composable("buttonScreen/{classId}") { backStackEntry ->
+            composable("verification/{classId}/{carnet}") { backStackEntry ->
                 val classId = backStackEntry.arguments?.getString("classId") ?: ""
-                ButtonScreen(navController, classId)
+                val carnet = backStackEntry.arguments?.getString("carnet") ?: ""
+                VerificationTabContent(navController, classId, carnet)
+            }
+            composable("buttonScreen/{classId}/{carnet}") { backStackEntry ->
+                val classId = backStackEntry.arguments?.getString("classId") ?: ""
+                val carnet = backStackEntry.arguments?.getString("carnet") ?: ""
+                ButtonScreen(navController, classId, carnet)
             }
             composable("positive/{classId}/{carnet}") { backStackEntry ->
                 val classId = backStackEntry.arguments?.getString("classId") ?: ""
@@ -239,9 +248,9 @@ fun MyApp() {
                 val carnet = backStackEntry.arguments?.getString("carnet") ?: ""
                 NegativeScreen(navController, classId, carnet, validarUser)
             }
-            composable("verification/{classId}") { backStackEntry ->
-                val classId = backStackEntry.arguments?.getString("classId") ?: ""
-                VerificationTabContent(navController, classId)
+            composable("profile/{carnet}") { backStackEntry ->
+                val carnet = backStackEntry.arguments?.getString("carnet") ?: ""
+                ProfileTabContent(navController, carnet)
             }
         }
     }

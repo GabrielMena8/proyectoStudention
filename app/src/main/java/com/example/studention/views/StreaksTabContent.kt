@@ -17,29 +17,56 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 
 @Composable
-fun StreaksTabContent(navController: NavHostController) {
-    val db = FirebaseFirestore.getInstance()
-    var rankingList by remember { mutableStateOf<List<RankingItemData>>(emptyList()) }
+fun StreaksTabContent(navController: NavHostController, carnet: String) {
+    var selectedTab by remember { mutableStateOf(3) } // Set the default tab to Streaks
 
-    LaunchedEffect(Unit) {
-        val validarUser = ValidarUser(navController.context)
-        validarUser.obtenerEstudiantesPorRacha(
-            onSuccess = { estudiantes: List<RankingItemData> ->
-                rankingList = estudiantes.mapIndexed { index: Int, estudiante: RankingItemData ->
-                    RankingItemData(
-                        name = estudiante.name,
-                        days = estudiante.days,
-                        rank = index + 1
-                    )
+    Scaffold(
+        bottomBar = {
+            BottomNavigationBar(
+                selectedTabIndex = selectedTab,
+                onTabSelected = { index ->
+                    selectedTab = index
+                    when (index) {
+                        1 -> navController.navigate("classes/$carnet")
+                        2 -> navController.navigate("profile/$carnet")
+                        3 -> navController.navigate("streaks/$carnet")
+                    }
                 }
-            },
-            onFailure = { e: Exception ->
-                Log.w("TAG", "Error al obtener el ranking de estudiantes", e)
-            }
-        )
-    }
+            )
+        }
+    ) { innerPadding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            contentAlignment = Alignment.Center
+        ) {
+            val db = FirebaseFirestore.getInstance()
+            var rankingList by remember { mutableStateOf<List<RankingItemData>>(emptyList()) }
 
-    StreakView(navController = navController, rankingList = rankingList)
+            LaunchedEffect(Unit) {
+                // Fetch ranking data
+                db.collection("estudiantes")
+                    .orderBy("racha", com.google.firebase.firestore.Query.Direction.DESCENDING)
+                    .get()
+                    .addOnSuccessListener { result ->
+                        val rankingItems = result.mapIndexed { index, document ->
+                            RankingItemData(
+                                name = document.getString("nombre") ?: "",
+                                days = document.getLong("racha")?.toInt() ?: 0,
+                                rank = index + 1
+                            )
+                        }
+                        rankingList = rankingItems
+                    }
+                    .addOnFailureListener { e ->
+                        Log.w("TAG", "Error al obtener el ranking", e)
+                    }
+            }
+
+            StreakView(navController = navController, rankingList = rankingList)
+        }
+    }
 }
 
 @Composable
