@@ -16,10 +16,13 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.studention.R
 import com.example.studention.ValidarUser
+import androidx.navigation.NavHostController
+import androidx.navigation.NavOptionsBuilder
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(navController: NavController) {
+fun LoginScreen(navController: NavHostController) {
     val context = LocalContext.current
     val validarUser = remember { ValidarUser(context) }
     var carnet by remember { mutableStateOf("") }

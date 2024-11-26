@@ -12,6 +12,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.database.database.UsersUtil
 import com.example.studention.R
@@ -106,7 +107,12 @@ fun ProfileTabContent() {
                         ) {
                             Column(modifier = Modifier.padding(16.dp)) {
                                 Text(text = "Materia: ${clase["materia"]}", style = MaterialTheme.typography.bodyLarge)
-                                Text(text = "Profesor: $profesorNombre", style = MaterialTheme.typography.bodyMedium)
+                                Text(
+                                    text = "Profesor: $profesorNombre",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    maxLines = 2,
+                                    overflow = TextOverflow.Ellipsis
+                                )
                                 Spacer(modifier = Modifier.height(8.dp))
                             }
                         }
@@ -115,6 +121,7 @@ fun ProfileTabContent() {
             }
         }
     }
+
 
     // Show dialog when button is clicked
     if (showDialog) {

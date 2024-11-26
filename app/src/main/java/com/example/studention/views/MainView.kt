@@ -17,24 +17,23 @@ import com.example.studention.R
 
 @Composable
 fun MainScreen(navController: NavHostController) {
-    var selectedTab by remember { mutableStateOf(0) }
+    var selectedTab by remember { mutableStateOf(1) }
 
-    // Definimos los colores para cada pestaña
+    // Define colors for each tab
     val backgroundColor = when (selectedTab) {
-        1 -> Color(0xFFFCE4EC) // Rosa para Classes
-        2 -> Color(0xFFE8F5E9) // Verde claro para Profile
-        3 -> Color(0xFFFFF3E0) // Naranja claro para Streaks
+        1 -> Color(0xFFFCE4EC) // Pink for Classes
+        2 -> Color(0xFFE8F5E9) // Light green for Profile
+        3 -> Color(0xFFFFF3E0) // Light orange for Streaks
         else -> Color.White
     }
 
     Scaffold(
-        containerColor = backgroundColor, // Cambiar el fondo dinámicamente
+        containerColor = backgroundColor, // Change background dynamically
         bottomBar = {
             BottomNavigationBar(
                 selectedTabIndex = selectedTab,
                 onTabSelected = { index ->
                     selectedTab = index
-                    if (index == 1) navController.navigate("buttonScreen")
                 }
             )
         }
@@ -74,19 +73,19 @@ fun BottomNavigationBar(
                 selected = selectedTabIndex == 1,
                 onClick = { onTabSelected(1) },
                 icon = { Icon(Icons.Filled.List, contentDescription = null) },
-                label = { Text("Classes") }
+                label = { Text("Clases") }
             )
             BottomNavigationItem(
                 selected = selectedTabIndex == 2,
                 onClick = { onTabSelected(2) },
                 icon = { Icon(Icons.Filled.Person, contentDescription = null) },
-                label = { Text("Profile") }
+                label = { Text("Perfil") }
             )
             BottomNavigationItem(
                 selected = selectedTabIndex == 3,
                 onClick = { onTabSelected(3) },
                 icon = { Icon(Icons.Filled.Star, contentDescription = null) },
-                label = { Text("Streaks") }
+                label = { Text("Racha") }
             )
         }
     }

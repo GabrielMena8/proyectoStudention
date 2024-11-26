@@ -5,6 +5,7 @@ import androidx.compose.runtime.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.background
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,41 +44,39 @@ fun StreaksTabContent(navController: NavHostController) {
 
 @Composable
 fun StreakView(navController: NavHostController, rankingList: List<RankingItemData>) {
-    Column(
+    LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        Text(
-            text = "Roadmap de Rachas",
-            style = MaterialTheme.typography.titleMedium,
-            color = Color.Black
-        )
+        item {
+            Text(
+                text = "Roadmap de Rachas",
+                style = MaterialTheme.typography.titleMedium,
+                color = Color.Black
+            )
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Mostrar el ranking como roadmap
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f) // Usamos weight para que ocupe el espacio disponible
-        ) {
-            rankingList.forEachIndexed { index, rankingItem ->
-                RoadmapItem(rankingItem = rankingItem, isLastItem = index == rankingList.size - 1)
-            }
+            Spacer(modifier = Modifier.height(16.dp))
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        items(rankingList.size) { index ->
+            val rankingItem = rankingList[index]
+            RoadmapItem(rankingItem = rankingItem, isLastItem = index == rankingList.size - 1)
+        }
 
-        // Contenedor para centrar el botón en la parte inferior
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Button(onClick = { navController.navigate("main") }) {
-                Text(text = "Volver")
+        item {
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Contenedor para centrar el botón en la parte inferior
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Button(onClick = { navController.navigate("main") }) {
+                    Text(text = "Volver")
+                }
             }
         }
     }

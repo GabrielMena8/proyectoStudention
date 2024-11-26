@@ -193,7 +193,6 @@ fun MyApp() {
     }
 
     if (isLoading) {
-        // Show a loading screen or some placeholder while carnet is being fetched
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
@@ -223,6 +222,9 @@ fun MyApp() {
             composable("streaks") {
                 StreaksTabContent(navController)
             }
+            composable("classes") {
+                ClassesTabContent(navController)
+            }
             composable("buttonScreen") {
                 ButtonScreen(navController)
             }
@@ -231,6 +233,10 @@ fun MyApp() {
             }
             composable("negative") {
                 NegativeScreen(navController, carnet!!, validarUser)
+            }
+            composable("verification/{classId}") { backStackEntry ->
+                val classId = backStackEntry.arguments?.getString("classId") ?: ""
+                VerificationTabContent(navController, classId)
             }
         }
     }
