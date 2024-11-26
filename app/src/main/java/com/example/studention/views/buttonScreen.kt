@@ -24,76 +24,43 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 @Composable
 fun ButtonScreen(navController: NavHostController, classId: String, carnet: String) {
-    val context = LocalContext.current
-    val validarUser = remember { ValidarUser(context) }
-    var carnet by remember { mutableStateOf<String?>(null) }
-    var isLoading by remember { mutableStateOf(true) }
-
-    LaunchedEffect(Unit) {
-        validarUser.obtenerCarnetUsuarioActual(
-            onSuccess = { carnetValue ->
-                carnet = carnetValue
-                isLoading = false
-            },
-            onFailure = { e ->
-                Log.w("TAG", "Error al obtener el carnet", e)
-                isLoading = false
-            }
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "¿Cómo fue tú clase de hoy?",
+            modifier = Modifier.padding(bottom = 32.dp),
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.Black
         )
-    }
 
-    if (isLoading) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            CircularProgressIndicator()
-        }
-    } else {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = "¿Cómo fue tú clase de hoy?",
-                modifier = Modifier.padding(bottom = 32.dp),
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black
-            )
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
+            Button(
+                onClick = {
+                    navController.navigate("positive/$classId/$carnet")
+                },
+                modifier = Modifier.padding(8.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
             ) {
-                // Positive review button
-                Button(
-                    onClick = {
-                        navController.navigate("positive/$classId/$carnet") {
-                            popUpTo("buttonScreen") { inclusive = true } // Avoid returning to ButtonScreen
-                        }
-                    },
-                    modifier = Modifier.padding(8.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)) // Green color
-                ) {
-                    Text("Review Positive", color = Color.White)
-                }
+                Text("Review Positive", color = Color.White)
+            }
 
-                // Negative review button
-                Button(
-                    onClick = {
-                        navController.navigate("negative/$classId/$carnet") {
-                            popUpTo("buttonScreen") { inclusive = true } // Avoid returning to ButtonScreen
-                        }
-                    },
-                    modifier = Modifier.padding(8.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF44336)) // Red color
-                ) {
-                    Text("Review Negativa", color = Color.White)
-                }
+            Button(
+                onClick = {
+                    navController.navigate("negative/$classId/$carnet")
+                },
+                modifier = Modifier.padding(8.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF44336))
+            ) {
+                Text("Review Negativa", color = Color.White)
             }
         }
     }
@@ -163,7 +130,7 @@ fun PositiveScreen(navController: NavHostController, classId: String, carnet: St
             confirmButton = {
                 Button(onClick = {
                     mostrarDialogo = false
-                    navController.navigate("streaks")
+                    navController.navigate("streaks/$carnet")
                 }) {
                     Text("OK")
                 }
@@ -236,7 +203,7 @@ fun NegativeScreen(navController: NavHostController, classId: String, carnet: St
             confirmButton = {
                 Button(onClick = {
                     mostrarDialogo = false
-                    navController.navigate("streaks")
+                    navController.navigate("streaks/$carnet")
                 }) {
                     Text("OK")
                 }

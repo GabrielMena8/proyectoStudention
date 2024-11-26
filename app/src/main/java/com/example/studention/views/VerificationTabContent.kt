@@ -19,7 +19,6 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VerificationTabContent(navController: NavHostController, classId: String, carnet: String) {
-
     val db = FirebaseFirestore.getInstance()
     var correctColor by remember { mutableStateOf<Color?>(null) }
     var options by remember { mutableStateOf<List<Color>>(emptyList()) }
@@ -28,10 +27,9 @@ fun VerificationTabContent(navController: NavHostController, classId: String, ca
     var timeLeft by remember { mutableStateOf(30) }
     val scope = rememberCoroutineScope()
 
-    // Fetch the color and class details associated with the classId
     LaunchedEffect(classId) {
         db.collection("voto").document(classId).get().addOnSuccessListener { document ->
-            val colorName = document.getString("color") ?: "red" // Default to red if no color found
+            val colorName = document.getString("color") ?: "red"
             correctColor = mapColorNameToColor(colorName)
             options = generateColorOptions(correctColor!!)
         }.addOnFailureListener {
@@ -44,14 +42,13 @@ fun VerificationTabContent(navController: NavHostController, classId: String, ca
             resultMessage = "Failed to load class details. Please try again."
         }
 
-        // Start the timer
         scope.launch {
             while (timeLeft > 0) {
                 delay(1000L)
                 timeLeft--
             }
             if (timeLeft == 0) {
-                navController.navigate("classes")
+                navController.navigate("classes/$carnet")
             }
         }
     }
@@ -60,7 +57,7 @@ fun VerificationTabContent(navController: NavHostController, classId: String, ca
         topBar = {
             TopAppBar(
                 title = { Text("Verificación", color = Color.White) },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF6200EE)) // Purple
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF6200EE))
             )
         }
     ) { paddingValues ->
@@ -73,12 +70,12 @@ fun VerificationTabContent(navController: NavHostController, classId: String, ca
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             if (correctColor == null || classDetails == null) {
-                CircularProgressIndicator(color = Color.White) // Show loading indicator
+                CircularProgressIndicator(color = Color.White)
             } else {
                 Text(
                     text = "Detalles de la Clase",
                     style = MaterialTheme.typography.headlineMedium,
-                    color = Color(0xFF6200EE), // Purple
+                    color = Color(0xFF6200EE),
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
 
@@ -86,7 +83,7 @@ fun VerificationTabContent(navController: NavHostController, classId: String, ca
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 8.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFF6200EE)) // Purple
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFF6200EE))
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(
@@ -106,7 +103,7 @@ fun VerificationTabContent(navController: NavHostController, classId: String, ca
                 Text(
                     text = "Escoge el color correcto para verificar tu asistencia:",
                     style = MaterialTheme.typography.bodyLarge,
-                    color = Color(0xFF6200EE), // Purple
+                    color = Color(0xFF6200EE),
                     modifier = Modifier.padding(vertical = 16.dp)
                 )
 
@@ -140,7 +137,7 @@ fun VerificationTabContent(navController: NavHostController, classId: String, ca
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                Text(text = resultMessage, style = MaterialTheme.typography.bodyLarge, color = Color(0xFF6200EE)) // Purple
+                Text(text = resultMessage, style = MaterialTheme.typography.bodyLarge, color = Color(0xFF6200EE))
             }
         }
     }

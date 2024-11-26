@@ -29,7 +29,6 @@ fun ClassesTabContent(navController: NavHostController, carnet: String) {
     var loading by remember { mutableStateOf(true) }
     var selectedTab by remember { mutableStateOf(1) }
 
-    // Fetch classes and professors when the composable is first composed
     LaunchedEffect(Unit) {
         usersUtil.obtenerTodosProfesores(
             onSuccess = { fetchedProfesores ->
@@ -40,13 +39,11 @@ fun ClassesTabContent(navController: NavHostController, carnet: String) {
                         loading = false
                     },
                     onFailure = { exception ->
-                        // Handle the error (e.g., show a message)
                         loading = false
                     }
                 )
             },
             onFailure = { exception ->
-                // Handle the error (e.g., show a message)
                 loading = false
             }
         )
@@ -82,7 +79,7 @@ fun ClassesTabContent(navController: NavHostController, carnet: String) {
             Spacer(modifier = Modifier.height(16.dp))
 
             if (loading) {
-                CircularProgressIndicator() // Show a loading indicator
+                CircularProgressIndicator()
             } else {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize()
@@ -96,7 +93,7 @@ fun ClassesTabContent(navController: NavHostController, carnet: String) {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(vertical = 8.dp),
-                            colors = CardDefaults.cardColors(containerColor = Color(0xCC6200FF)) // Light purple color
+                            colors = CardDefaults.cardColors(containerColor = Color(0xCC6200FF))
                         ) {
                             Column(modifier = Modifier.padding(16.dp)) {
                                 Text(text = "Materia: ${clase["materia"]}", style = MaterialTheme.typography.bodyLarge, color = Color.White)
@@ -117,7 +114,7 @@ fun ClassesTabContent(navController: NavHostController, carnet: String) {
                                     },
                                     colors = ButtonDefaults.buttonColors(containerColor = Color.White)
                                 ) {
-                                    Text(text = "Verificar Asistencia", color = Color(0xCC6200FF)) // Light purple text color
+                                    Text(text = "Verificar Asistencia", color = Color(0xCC6200FF))
                                 }
                             }
                         }
