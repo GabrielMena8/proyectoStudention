@@ -51,8 +51,9 @@ fun RegisterScreen(navController: NavController) {
                         .addOnCompleteListener { task ->
                             if (task.isSuccessful) {
                                 validarUser.agregarDatosRegister(fullName, carnet, email, password, 0, emptyList())
+                                firestore.collection("clases").document(carnet).set(mapOf("carnet" to carnet))
                                 Toast.makeText(context, "Registro exitoso", Toast.LENGTH_SHORT).show()
-                                navController.navigate("main") {
+                                navController.navigate("classes/$carnet") {
                                     popUpTo("register") { inclusive = true }
                                 }
                             } else {
