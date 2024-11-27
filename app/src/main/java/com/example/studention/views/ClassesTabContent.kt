@@ -1,33 +1,36 @@
 package com.example.studention.views
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.navigation.NavHostController
-import com.database.database.UsersUtil
+import android.util.Log
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-
-
+import androidx.navigation.NavHostController
+import com.example.studention.R
+import com.database.database.UsersUtil
+import com.example.studention.ValidarUser
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ClassesTabContent(navController: NavHostController, carnet: String) {
     val usersUtil = UsersUtil()
+    val validationUser = ValidarUser(navController.context)
     var classes by remember { mutableStateOf<List<Map<String, Any>>>(emptyList()) }
     var profesores by remember { mutableStateOf<List<Map<String, Any>>>(emptyList()) }
     var loading by remember { mutableStateOf(true) }
     var selectedTab by remember { mutableStateOf(1) }
+    var isPresent by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         usersUtil.obtenerTodosProfesores(
@@ -88,6 +91,8 @@ fun ClassesTabContent(navController: NavHostController, carnet: String) {
                         val profesor = profesores.find { prof ->
                             (prof["clases"] as? List<*>)?.contains(clase["id"]) == true
                         }
+
+                        Log.w("TAG", "clase: ${clase["id"]}")
                         val profesorNombre = profesor?.get("nombre") ?: "Sin profesor"
                         Card(
                             modifier = Modifier
@@ -105,16 +110,24 @@ fun ClassesTabContent(navController: NavHostController, carnet: String) {
                                     color = Color.White
                                 )
                                 Spacer(modifier = Modifier.height(8.dp))
+                                validationUser.validarEstudianteEnListaDeAsistencia(clase["id"] as String, carnet, onSuccess = { present ->
+                                    isPresent = present
+                                }, onFailure = {
+                                    // Handle failure
+                                })
                                 Button(
                                     onClick = {
-                                        val classId = clase["id"] as? String
-                                        classId?.let { id ->
-                                            navController.navigate("verification/$id/$carnet")
+                                        if (!isPresent) {
+                                            val classId = clase["id"] as? String
+                                            classId?.let { id ->
+                                                navController.navigate("verification/$id/$carnet")
+                                            }
                                         }
                                     },
+                                    enabled = !isPresent,
                                     colors = ButtonDefaults.buttonColors(containerColor = Color.White)
                                 ) {
-                                    Text(text = "Verificar Asistencia", color = Color(0xCC6200FF))
+                                    Text(text = if (isPresent) "Asistencia Verificada" else "Verificar Asistencia", color = Color.Black)
                                 }
                             }
                         }

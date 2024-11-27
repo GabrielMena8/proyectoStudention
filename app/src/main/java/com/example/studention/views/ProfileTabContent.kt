@@ -92,14 +92,7 @@ fun ProfileTabContent(navController: NavHostController, carnet: String) {
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.add_svg),
-                contentDescription = "Profile Picture",
-                modifier = Modifier
-                    .size(100.dp)
-                    .padding(8.dp)
-            )
-            Text(text = "Mis clases", style = MaterialTheme.typography.headlineMedium)
+
 
             Spacer(modifier = Modifier.height(16.dp))
 

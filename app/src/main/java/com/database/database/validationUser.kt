@@ -221,6 +221,35 @@ class ValidarUser(context: Context) {
             }
     }
 
+    fun validarEstudianteEnListaDeAsistencia(
+        claseId: String, // El id del documento de la clase
+        carnet: String,
+        onSuccess: (Boolean) -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        db.collection("voto")
+            .document(claseId) // Busca el documento de la clase específica
+            .get()
+            .addOnSuccessListener { document ->
+                if (document.exists()) {
+                    val asistencia = document.get("asistencia") as? List<String>
+                    if (asistencia != null && carnet in asistencia) {
+                        Log.d("ValidarUser", "El estudiante ya está en la lista de asistencia.")
+                        onSuccess(true) // El carnet está en la lista de asistencia
+                    } else {
+                        Log.d("ValidarUser", "El estudiante no está en la lista de asistencia.")
+                        onSuccess(false) // El carnet no está en la lista
+                    }
+                } else {
+                    Log.d("ValidarUser", "El documento de la clase no existe.")
+                    onSuccess(false)
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.w("ValidarUser", "Error al verificar la lista de asistencia.", exception)
+                onFailure(exception)
+            }
+    }
     //val nuevaClase = mapOf(
     //    "classId" to "el codigo de la clase que queremos guardar el horario",
     //    "timestamp" to System.currentTimeMillis(),
@@ -235,6 +264,7 @@ class ValidarUser(context: Context) {
 
 
 }
+
 
 data class User(
     val carnet: String,
