@@ -9,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -20,6 +21,7 @@ import androidx.navigation.NavHostController
 import com.example.studention.R
 import com.database.database.UsersUtil
 import com.example.studention.ValidarUser
+import com.google.firebase.auth.FirebaseAuth
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -65,6 +67,18 @@ fun ClassesTabContent(navController: NavHostController, carnet: String) {
                     }
                 }
             )
+        },
+        floatingActionButton = {
+            FloatingActionButton(onClick = {
+                FirebaseAuth.getInstance().signOut()
+                navController.navigate("login") {
+                    popUpTo(navController.graph.startDestinationId) {
+                        inclusive = true
+                    }
+                }
+            }) {
+                Icon(Icons.Filled.ExitToApp, contentDescription = "Cerrar sesión")
+            }
         }
     ) { paddingValues ->
         Column(
