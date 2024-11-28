@@ -32,7 +32,7 @@ fun ClassesTabContent(navController: NavHostController, carnet: String) {
     var profesores by remember { mutableStateOf<List<Map<String, Any>>>(emptyList()) }
     var loading by remember { mutableStateOf(true) }
     var selectedTab by remember { mutableStateOf(1) }
-    var isPresent by remember { mutableStateOf(false) }
+    val attendanceState = remember { mutableStateMapOf<String, Boolean>() } // Almacena el estado de asistencia por clase
 
     LaunchedEffect(Unit) {
         usersUtil.obtenerTodosProfesores(
@@ -91,6 +91,7 @@ fun ClassesTabContent(navController: NavHostController, carnet: String) {
         ) {
             Spacer(modifier = Modifier.height(16.dp))
 
+
             Text(text = "Clases que tuviste hoy", style = MaterialTheme.typography.headlineMedium)
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -106,8 +107,27 @@ fun ClassesTabContent(navController: NavHostController, carnet: String) {
                             (prof["clases"] as? List<*>)?.contains(clase["id"]) == true
                         }
 
-                        Log.w("TAG", "clase: ${clase["id"]}")
                         val profesorNombre = profesor?.get("nombre") ?: "Sin profesor"
+                        val classId = clase["id"] as String
+
+                        // Solo validar asistencia si no está almacenada en el estado
+                        if (!attendanceState.containsKey(classId)) {
+                            LaunchedEffect(classId) {
+                                validationUser.validarEstudianteEnListaDeAsistencia(
+                                    classId,
+                                    carnet,
+                                    onSuccess = { present ->
+                                        attendanceState[classId] = present
+                                    },
+                                    onFailure = {
+                                        attendanceState[classId] = false
+                                    }
+                                )
+                            }
+                        }
+
+                        val isPresent = attendanceState[classId] ?: false
+
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -115,7 +135,11 @@ fun ClassesTabContent(navController: NavHostController, carnet: String) {
                             colors = CardDefaults.cardColors(containerColor = Color(0xCC6200FF))
                         ) {
                             Column(modifier = Modifier.padding(16.dp)) {
-                                Text(text = "Materia: ${clase["materia"]}", style = MaterialTheme.typography.bodyLarge, color = Color.White)
+                                Text(
+                                    text = "Materia: ${clase["materia"]}",
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = Color.White
+                                )
                                 Text(
                                     text = "Profesor: $profesorNombre",
                                     style = MaterialTheme.typography.bodyMedium,
@@ -124,24 +148,19 @@ fun ClassesTabContent(navController: NavHostController, carnet: String) {
                                     color = Color.White
                                 )
                                 Spacer(modifier = Modifier.height(8.dp))
-                                validationUser.validarEstudianteEnListaDeAsistencia(clase["id"] as String, carnet, onSuccess = { present ->
-                                    isPresent = present
-                                }, onFailure = {
-                                    // Handle failure
-                                })
                                 Button(
                                     onClick = {
                                         if (!isPresent) {
-                                            val classId = clase["id"] as? String
-                                            classId?.let { id ->
-                                                navController.navigate("verification/$id/$carnet")
-                                            }
+                                            navController.navigate("verification/$classId/$carnet")
                                         }
                                     },
                                     enabled = !isPresent,
                                     colors = ButtonDefaults.buttonColors(containerColor = Color.White)
                                 ) {
-                                    Text(text = if (isPresent) "Asistencia Verificada" else "Verificar Asistencia", color = Color.Black)
+                                    Text(
+                                        text = if (isPresent) "Asistencia Verificada" else "Verificar Asistencia",
+                                        color = Color.Black
+                                    )
                                 }
                             }
                         }
